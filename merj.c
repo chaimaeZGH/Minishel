@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/05/29 23:12:01 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/05/30 00:44:46 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,8 @@ void merge_quotes(t_list *start, t_list *end)
 	
 	while (node_to_merge != NULL && node_to_merge != end)
 	{
-		if (node_to_merge->content) {
+		if (node_to_merge->content) 
+        {
 			size_t new_len = ft_strlen(start->content) + ft_strlen(node_to_merge->content) + 1;
 			new_content = malloc(new_len);
 			if (!new_content) {
