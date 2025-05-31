@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/05/30 00:44:46 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/05/31 21:53:02 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,8 @@ void merge_quotes(t_list *start, t_list *end)
         {
 			size_t new_len = ft_strlen(start->content) + ft_strlen(node_to_merge->content) + 1;
 			new_content = malloc(new_len);
-			if (!new_content) {
-				perror("malloc failed");
-				exit(EXIT_FAILURE);
-			}
+			if (!new_content) 
+				return;
 			ft_strlcpy(new_content, start->content, new_len);
 			ft_strlcat(new_content, node_to_merge->content, new_len);
 			
@@ -131,4 +129,88 @@ void what_to_merge(t_list **head)
 		else 
 			current = current->next;
 	}
+}
+
+
+void merge_cmd_quoat(t_list **head)
+{
+	if (!head || !*head) 
+		return;
+
+	char *new_content;
+	t_list *current;
+	t_list *next_nod;
+	int len;
+	current = *head;
+	
+	while (current && current->next)
+	{
+		len = ft_strlen(current->content);
+		next_nod=current->next;
+		
+		if (current->content && next_nod->content && (current->index == 0 && next_nod->index == 0) && (next_nod->content[0] == '\"' || next_nod->content[0] == '\'') && (current->content)[len-1] != ' ')
+		{
+			
+			size_t new_len = ft_strlen(current->content) + ft_strlen(next_nod->content) + 1;
+			new_content = malloc(new_len);
+			if (!new_content) 
+				return;
+			ft_strlcpy(new_content, current->content, new_len);
+			ft_strlcat(new_content, next_nod->content, new_len);
+			
+			free(current->content);
+			current->content = new_content;
+
+			current->next = next_nod->next;
+			if (next_nod->next)
+                next_nod->next->prev = current;
+			free(next_nod->content);
+			free(next_nod);
+			
+		}
+		current = current->next;
+	}
+}
+
+void merge_quotes_nodes(t_list **head)
+{
+    if (!head || !*head) 
+        return;
+
+    t_list *current = *head;
+    t_list *prv_nod;
+	char *new_contentp;
+    int lenp;
+
+    while (current)
+    {
+        prv_nod = current->prev;
+        
+        if (prv_nod && prv_nod->content && current->content && (current->index == 0 && prv_nod->index == 0))
+        {
+            lenp = ft_strlen(prv_nod->content);
+            
+            if (lenp > 0 && (prv_nod->content[lenp-1] == '\"' || prv_nod->content[lenp-1] == '\'') && current->content[0] != ' ')
+            {
+                int new_len = ft_strlen(current->content) + lenp + 1;
+                new_contentp = malloc(new_len);
+                if (!new_contentp)
+                    return;
+
+                ft_strlcpy(new_contentp, prv_nod->content, lenp + 1);
+                ft_strlcat(new_contentp, current->content, new_len);
+                free(prv_nod->content);
+                prv_nod->content = new_contentp;
+                prv_nod->next = current->next;
+                if (current->next)
+                    current->next->prev = prv_nod;
+                t_list *to_free = current;
+                free(to_free->content);
+                free(to_free);
+                current = prv_nod;
+                
+            }
+        }
+        current = current->next;
+    }
 }

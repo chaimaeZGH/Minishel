@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/05/29 22:55:40 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/05/31 23:24:09 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ void	ft_lstadd_back(t_list **lst, t_list *new)
     new->prev = l;
 }
 
-t_list *extract_command(char *str, int start, int end)
+t_list  *extract_command(char *str, int start, int end)
 {
     if (start >= end)
         return NULL;
@@ -166,22 +166,23 @@ t_list *extract_command(char *str, int start, int end)
         free(cmd);
         return NULL;
     }
-    char *ptr = ft_trimm(cmd);
-    t_list *node = ft_lstnew(ptr);
+    // char *ptr = ft_trimm(cmd);
+    t_list *node = ft_lstnew(cmd);
     if (node == NULL)
     {
         free(cmd);
-        free(ptr);
+        // free(ptr);
         return NULL;
     }
-    free(cmd);
+    
+    // free(cmd);
     return node;
 }
 
-void split_line(char *line,int i, t_list **head)
+void    split_line(char *line,int i, t_list **head)
 {   
     int start = i;
-    while(line[i] != '|' && line[i] != '<' && line[i] != '>' && line[i] != '\0' && line[i] != '\"' && line[i] != '\'') 
+    while(line[i] != '|' && line[i] != '<' && line[i] != '>' && line[i] != '\0' && line[i] != '\"' && line[i] != '\'' ) 
         i++;
     t_list *node = extract_command(line, start, i);
     if (node != NULL)
@@ -240,12 +241,29 @@ void split_line(char *line,int i, t_list **head)
         split_line(line,i, head);
 }
 
+char * map_type(type_list index)
+{
+    if (index == 0)
+        return "command";
+    if (index == 1)
+        return "pipe";
+    if (index == 2)
+        return "redirection in";
+    if (index == 3)
+        return "redirection out";
+    if (index == 4)
+        return "redirection heredoc";
+    if (index == 5)
+        return "redirection append";
+    return NULL;
+}
+
 void print_nodes(t_list *head)
 {
     t_list *current = head;
     while (current != NULL)
     {
-        printf("Content: **%s**, Index: %d\n", current->content, current->index);
+        printf(BLUE"Content: --%s--, "YELLOW"type: %s\n"RESET, current->content, map_type(current->index));
         current = current->next;
     }
 }
@@ -346,25 +364,32 @@ int sintax_erreur(t_list *head)
             {
                 if (current->content[i] == ';' || current->content[i] == '\\')
                 {
-                    printf("Syntax error: unexpected token '%c'\n", current->content[i]);
+                    printf(RED"Syntax error: unexpected token '%c'\n"RESET, current->content[i]);
                     j = 1;
                 }
                 i++;
             }
             i = 0;
             while (current->content[i] != '\0')
+            
                 i++;
             if( i==1 && (current->content[0]=='\'' || current->content[i-1]=='\"'))
             {
-                printf("Syntax error: unclosed quotes\n");
+                printf(RED"Syntax error: unclosed quotes\n"RESET);
                 j= 1;
             }
+        
             if((current->content[0]=='\'' && current->content[i-1]!='\'') ||
                 (current->content[0]=='\"' && current->content[i-1]!='\"'))
             {
-                printf("Syntax error: unclosed quotes\n");
+                printf(RED"Syntax error: unclosed quotes\n"RESET);
                 j = 1;
             }
+        }
+        if(current->index == PIPE && (current->prev == NULL || current->prev->index != comnd) )
+        {
+            printf(RED"syntax error near unexpected token `|'\n"RESET);
+            j = 1;
         }
         current = current->next;
     }
@@ -381,8 +406,9 @@ int main()
     while (1)
     {
         head = NULL;  
-        s = readline("");
-        if (!s) break;
+        s = readline(GREEN"minishell> "RESET);
+        if (!s)
+            break;
         if (*s) 
             add_history(s);
         ptr = ft_trimm(s);
@@ -390,12 +416,15 @@ int main()
         {
             split_line(ptr, 0, &head);
             what_to_merge(&head);
-            clear_spaces(&head);
-            print_nodes(head);
             j = sintax_erreur(head);
+            merge_cmd_quoat(&head);
+            clear_spaces(&head);//corect this only to work out quats
+            merge_quotes_nodes(&head);
+            print_nodes(head);
+            
             if(j == 0)
             {
-                printf("Syntax is correct creat tree.\n");
+                // printf("Syntax is correct creat tree.\n");
             }
             free_list(head);
         }
