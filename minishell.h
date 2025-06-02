@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:59:01 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/05/31 21:06:06 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/02 21:43:18 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ void what_to_merge(t_list **head);
 size_t	ft_strlen(const char *str);
 void merge_cmd_quoat(t_list **head);
 void merge_quotes_nodes(t_list **head);
+void merge_file_cmd(t_list **head);
 
 
 

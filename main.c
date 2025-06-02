@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/02 14:02:55 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/02 21:49:12 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,14 +99,14 @@ t_list *ft_lstnew(void *content)
     
     if (ft_strncmp("|", (char *)content, 1) == 0)
         head->index = PIPE;
-    else if (ft_strncmp("<", (char *)content, 1) == 0)
-        head->index = INredirection;
-    else if (ft_strncmp(">", (char *)content, 1) == 0)
-        head->index = OUTredirection;
     else if (ft_strncmp("<<", (char *)content, 2) == 0)
         head->index = HEREdocument;
     else if (ft_strncmp(">>", (char *)content, 2) == 0)
         head->index = OUTappend;
+    else if (ft_strncmp("<", (char *)content, 1) == 0)
+        head->index = INredirection;
+    else if (ft_strncmp(">", (char *)content, 1) == 0)
+        head->index = OUTredirection;
     else if (ft_strncmp("\"", (char *)content, 1) == 0)
         head->index = comnd;
     else if (ft_strncmp("\'", (char *)content, 1) == 0)
@@ -259,7 +259,7 @@ void print_nodes(t_list *head)
     t_list *current = head;
     while (current != NULL)
     {
-        printf(BLUE"Content: --%s--, "YELLOW"type: %s\n"RESET, current->content, map_type(current->index));
+        printf(BLUE"Content: --%s--, "YELLOW"type: %s \n"RESET, current->content, map_type(current->index));
         current = current->next;
     }
 }
@@ -404,6 +404,11 @@ int sintax_erreur(t_list *head)
             printf(RED"syntax error near unexpected token `|'\n"RESET);
             j = 1;
         }
+        if(current->index == HEREdocument && (current->prev == NULL || current->prev->index != comnd))
+        {
+            printf(RED"syntax error near unexpected token `newline'\n"RESET);
+            j = 1;
+        }
         current = current->next;
     }
     return j;
@@ -428,6 +433,34 @@ void trimm_white_nods(t_list **head)
     }
 }
 
+void merge_file_cmd(t_list **head) 
+{
+    if (!head || !*head) 
+        return;
+    
+    t_list *current = *head;
+    while (current) 
+    {
+        t_list *prev_node = current->prev;
+
+        if (prev_node && prev_node->index && current->index == 0 
+            && (prev_node->index >= 2 && prev_node->index <= 5)) 
+        {
+            current->index = prev_node->index;
+            
+            if (prev_node->prev)
+                prev_node->prev->next = current;
+            else
+                *head = current;
+            current->prev = prev_node->prev;
+            free(prev_node->content);
+            free(prev_node);
+        }
+        current = current->next;
+    }
+}
+
+// int main(int argc, char **argv, char **env) till working with envirement
 int main()
 {
     char *ptr;
@@ -455,6 +488,7 @@ int main()
                 clear_spaces(&head);
                 trimm_white_nods(&head);
                 merge_quotes_nodes(&head);
+                merge_file_cmd(&head);
                 print_nodes(head);
                 // printf("Syntax is correct creat tree.\n");
             }
