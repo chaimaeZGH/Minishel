@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/05/31 21:53:02 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/01 15:38:35 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,8 @@ void merge_quotes_nodes(t_list **head)
                 new_contentp = malloc(new_len);
                 if (!new_contentp)
                     return;
-
+				printf("merg 1 --%s--\n",prv_nod->content);
+				printf("merg 2 --%s--\n",current->content);
                 ft_strlcpy(new_contentp, prv_nod->content, lenp + 1);
                 ft_strlcat(new_contentp, current->content, new_len);
                 free(prv_nod->content);

@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/05/31 23:24:09 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/02 14:02:55 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,16 +166,12 @@ t_list  *extract_command(char *str, int start, int end)
         free(cmd);
         return NULL;
     }
-    // char *ptr = ft_trimm(cmd);
     t_list *node = ft_lstnew(cmd);
     if (node == NULL)
     {
         free(cmd);
-        // free(ptr);
         return NULL;
     }
-    
-    // free(cmd);
     return node;
 }
 
@@ -334,13 +330,25 @@ char *delet_spaces(char *str)
     return new_str;
 }
 
+int chack_white_space(char *str)
+{
+    int i = 0 ;
+    while(str[i])
+    {
+        if (str[i]==' ')
+            i++;
+        else 
+            return 0;
+    }
+    return 1;
+}
 void clear_spaces(t_list **head)
 {
     char *ptr;
     t_list *curent= *head;
     while (curent!=NULL)
     {
-        if(curent->index == comnd && (curent->content[0] != '\'' || curent->content[0] != '\"'))
+        if(curent->index == comnd && (curent->content[0] != '\'' && curent->content[0] != '\"') && chack_white_space(curent->content) != 1)
         {
             ptr = curent->content;
             ptr = delet_spaces(ptr);
@@ -386,6 +394,11 @@ int sintax_erreur(t_list *head)
                 j = 1;
             }
         }
+        if(current->index != comnd && (current->next == NULL || current->next->index != comnd))
+        {
+            printf(RED"syntax error near unexpected token `newline'\n"RESET);
+            j = 1;
+        }
         if(current->index == PIPE && (current->prev == NULL || current->prev->index != comnd) )
         {
             printf(RED"syntax error near unexpected token `|'\n"RESET);
@@ -394,6 +407,25 @@ int sintax_erreur(t_list *head)
         current = current->next;
     }
     return j;
+}
+
+void trimm_white_nods(t_list **head)
+{
+    if (!head || !*head) 
+		return;
+    t_list *current;
+    current = *head;
+    while (current != NULL)
+	{
+        if (current->index == 0 && chack_white_space(current->content) == 1)
+        {
+            free(current->content);
+            current->content = malloc(2);
+            current->content[0] = ' ';
+            current->content[1] = '\0';
+        }
+        current = current->next;
+    }
 }
 
 int main()
@@ -417,13 +449,13 @@ int main()
             split_line(ptr, 0, &head);
             what_to_merge(&head);
             j = sintax_erreur(head);
-            merge_cmd_quoat(&head);
-            clear_spaces(&head);//corect this only to work out quats
-            merge_quotes_nodes(&head);
-            print_nodes(head);
-            
             if(j == 0)
             {
+                merge_cmd_quoat(&head);
+                clear_spaces(&head);
+                trimm_white_nods(&head);
+                merge_quotes_nodes(&head);
+                print_nodes(head);
                 // printf("Syntax is correct creat tree.\n");
             }
             free_list(head);
