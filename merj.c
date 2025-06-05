@@ -6,13 +6,12 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/01 15:38:35 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/04 20:41:58 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <readline/readline.h>
-#include <readline/history.h>
+
 
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 {
@@ -148,7 +147,7 @@ void merge_cmd_quoat(t_list **head)
 		len = ft_strlen(current->content);
 		next_nod=current->next;
 		
-		if (current->content && next_nod->content && (current->index == 0 && next_nod->index == 0) && (next_nod->content[0] == '\"' || next_nod->content[0] == '\'') && (current->content)[len-1] != ' ')
+		if (current->content && next_nod->content && (current->type == 0 && next_nod->type == 0) && (next_nod->content[0] == '\"' || next_nod->content[0] == '\'') && (current->content)[len-1] != ' ')
 		{
 			
 			size_t new_len = ft_strlen(current->content) + ft_strlen(next_nod->content) + 1;
@@ -186,7 +185,7 @@ void merge_quotes_nodes(t_list **head)
     {
         prv_nod = current->prev;
         
-        if (prv_nod && prv_nod->content && current->content && (current->index == 0 && prv_nod->index == 0))
+        if (prv_nod && prv_nod->content && current->content && (current->type == 0 && prv_nod->type == 0))
         {
             lenp = ft_strlen(prv_nod->content);
             
@@ -196,8 +195,7 @@ void merge_quotes_nodes(t_list **head)
                 new_contentp = malloc(new_len);
                 if (!new_contentp)
                     return;
-				printf("merg 1 --%s--\n",prv_nod->content);
-				printf("merg 2 --%s--\n",current->content);
+
                 ft_strlcpy(new_contentp, prv_nod->content, lenp + 1);
                 ft_strlcat(new_contentp, current->content, new_len);
                 free(prv_nod->content);
