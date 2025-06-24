@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/24 06:45:59 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/24 06:53:11 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@
 # include <stdio.h> 
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "../libft/libft.h"
+#include "./libft/libft.h"
 
 
 typedef enum a_type_list{

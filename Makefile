@@ -13,7 +13,7 @@ OBJS = $(SRCS:.c=.o)
 HEADER = minishell.h
 NAME = minishell
 
-LIBFT_DIR = ../libft
+LIBFT_DIR = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 # NAME_B = 
