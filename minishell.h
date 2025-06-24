@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/24 06:53:11 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/24 07:06:04 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,14 +74,14 @@ typedef struct s_check
 typedef struct s_tree_list
 {
 	t_type_list             type;
-	struct t_tokenlist      *cmd;
+	t_tokenlist      *cmd; //newshit
 	struct s_tree_list      *right;
 	struct s_tree_list      *left;
 }                           t_tree_list;
 
-t_tokenlist *ft_lstnew(void *content);
-t_tokenlist *ft_lstlast(t_tokenlist *lst);
-void		ft_lstadd_back(t_tokenlist **lst, t_tokenlist *new);
+t_tokenlist *ft_lstnewn(void *content);
+t_tokenlist *ft_lstlastn(t_tokenlist *lst);
+void		ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new);
 
 
 

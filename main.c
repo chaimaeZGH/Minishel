@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/24 06:43:52 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/24 07:07:40 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ t_check *extract_cmd_quat(char *line, int i, char c)
         return NULL;
     }
     
-    strackt->str = ft_lstnew(ft_strdup(cmd));
+    strackt->str = ft_lstnewn(ft_strdup(cmd));
     strackt->i = j + 1;
     free(cmd);
     return strackt;
@@ -174,7 +174,7 @@ t_check *extract_cmd(char *line, int i)
         return NULL;
     }
     
-    strackt->str = ft_lstnew(ft_strdup(cmd));
+    strackt->str = ft_lstnewn(ft_strdup(cmd));
     strackt->i = j;
     free(cmd);
     return strackt;
@@ -198,30 +198,30 @@ int ssplit_line(char *line, t_tokenlist **head)
             if (!result)
                 return printf(RED"Syntax error: unclosed quotes\n"RESET), 1;
                 
-            ft_lstadd_back(head, result->str);
+            ft_lstadd_backn(head, result->str);
             i = result->i;
             free(result);
         }
         else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
         {
             if (line[i] == '|') {
-                ft_lstadd_back(head, ft_lstnew(ft_strdup("|")));
+                ft_lstadd_backn(head, ft_lstnewn(ft_strdup("|")));
                 i++;
             }
             else if (line[i] == '<' && line[i+1] == '<') {
-                ft_lstadd_back(head, ft_lstnew(ft_strdup("<<")));
+                ft_lstadd_backn(head, ft_lstnewn(ft_strdup("<<")));
                 i += 2;
             }
             else if (line[i] == '<') {
-                ft_lstadd_back(head, ft_lstnew(ft_strdup("<")));
+                ft_lstadd_backn(head, ft_lstnewn(ft_strdup("<")));
                 i++;
             }
             else if (line[i] == '>' && line[i+1] == '>') {
-                ft_lstadd_back(head, ft_lstnew(ft_strdup(">>")));
+                ft_lstadd_backn(head, ft_lstnewn(ft_strdup(">>")));
                 i += 2;
             }
             else if (line[i] == '>') {
-                ft_lstadd_back(head, ft_lstnew(ft_strdup(">")));
+                ft_lstadd_backn(head, ft_lstnewn(ft_strdup(">")));
                 i++;
             }
         }
@@ -231,7 +231,7 @@ int ssplit_line(char *line, t_tokenlist **head)
             if (!result)
                 return printf(RED"Memory allocation error\n"RESET), 1;
                 
-            ft_lstadd_back(head, result->str);
+            ft_lstadd_backn(head, result->str);
             i = result->i;
             free(result);
         }

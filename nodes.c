@@ -6,13 +6,13 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/24 06:42:46 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/24 07:05:52 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_tokenlist *ft_lstnew(void *content)
+t_tokenlist *ft_lstnewn(void *content)
 {
 	t_tokenlist *head = malloc(sizeof(t_tokenlist));
 	if (head == NULL)
@@ -47,7 +47,7 @@ t_tokenlist *ft_lstnew(void *content)
 	return head;
 }
 
-t_tokenlist	*ft_lstlast(t_tokenlist *lst)
+t_tokenlist	*ft_lstlastn(t_tokenlist *lst)
 {
 	if (lst == NULL)
 		return (NULL);
@@ -58,7 +58,7 @@ t_tokenlist	*ft_lstlast(t_tokenlist *lst)
 	return (lst);
 }
 
-void	ft_lstadd_back(t_tokenlist **lst, t_tokenlist *new)
+void	ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new)
 {
 	t_tokenlist	*l;
 
@@ -69,7 +69,7 @@ void	ft_lstadd_back(t_tokenlist **lst, t_tokenlist *new)
 		*lst = new;
 		return ;
 	}
-	l = ft_lstlast(*lst);
+	l = ft_lstlastn(*lst);
 	l->next = new;
 	new->prev = l;
 }
