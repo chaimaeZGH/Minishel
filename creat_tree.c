@@ -6,22 +6,23 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/05 14:48:45 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/23 00:32:13 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_tree_list *create_node(void *content)
+int count_pipe(t_tokenlist *head)
 {
-    t_tree_list *brnch = malloc(sizeof(t_tree_list));
-	if (brnch == NULL)
-		return NULL;
-		
-	brnch->right = content;
-	brnch->left = NULL;
-	brnch->type = NULL;
-    brnch->cmd=NULL;
-	return brnch;
+	int i;
+	
+	i = 0;
+	while (head != NULL)
+	{
+		if (head->type==PIPE)
+			i++;
+		head = head->next;
+	}
+	return i;
 }
 

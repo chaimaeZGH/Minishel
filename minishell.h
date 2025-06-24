@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/05 22:33:55 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/24 06:45:59 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,41 +37,53 @@
 # include <stdio.h> 
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "../libft/libft.h"
 
 
 typedef enum a_type_list{
-    comnd,
+	comnd,
 	PIPE,
-    INredirection,
-    OUTredirection,
-    HEREdocument,
-    OUTappend
+	INredirection,
+	OUTredirection,
+	HEREdocument,
+	OUTappend
 }	t_type_list;
 
-typedef struct s_list
+typedef struct s_tokenlist
 {
 	char			*content;
-	struct s_list      	*prev;
-	struct s_list      	*next;
+	struct s_tokenlist      	*prev;
+	struct s_tokenlist      	*next;
 	t_type_list		type;
-}	                t_list;
+}	                t_tokenlist;
 
+
+typedef struct s_check
+{
+	int i;
+	t_tokenlist *str;
+} t_check;
+
+// newshit
+// {
+//     t_tokenlist in;
+//     t_tokenlist out;
+//     t_tokenlist args;
+// }
 
 typedef struct s_tree_list
 {
-    t_type_list             type;
-    char                    **cmd;
-    struct s_tree_list      *right;
-    struct s_tree_list      *left;
+	t_type_list             type;
+	struct t_tokenlist      *cmd;
+	struct s_tree_list      *right;
+	struct s_tree_list      *left;
 }                           t_tree_list;
 
-size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
-void merge_quotes(t_list *start, t_list *end);
-void what_to_merge(t_list **head);
-size_t	ft_strlen(const char *str);
-void merge_cmd_quoat(t_list **head);
-void merge_file_cmd(t_list **head);
-void merge_quotes_nodes(t_list **head);
+t_tokenlist *ft_lstnew(void *content);
+t_tokenlist *ft_lstlast(t_tokenlist *lst);
+void		ft_lstadd_back(t_tokenlist **lst, t_tokenlist *new);
+
+
+
 
 #endif
