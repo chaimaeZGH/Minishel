@@ -6,13 +6,13 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/24 07:07:40 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/02 22:13:19 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char * map_type(t_type_list type)
+char *map_type(t_type_list type)
 {
 	if (type == 0)
 		return "command";
@@ -34,7 +34,7 @@ void print_nodes(t_tokenlist *head)
 	t_tokenlist *current = head;
 	while (current != NULL)
 	{
-		printf(BLUE"Content: --%s--, "YELLOW"type: %s \n"RESET, current->content, map_type(current->type));
+		printf(BLUE"Content: [%s], "YELLOW"type: %s \n"RESET, current->content, map_type(current->type));
 		current = current->next;
 	}
 }
@@ -50,10 +50,21 @@ void free_list(t_tokenlist *head)
 		free(tmp);
 	}
 }
-
-int sintax_erreur(t_tokenlist *head)
+void    ft_error_msg(int errnum)
 {
-	
+    if(errnum == 0)
+        printf(RED"Syntax error: unexpected token ; or \\ \n"RESET);
+     if(errnum == 1)
+        printf(RED"syntax error near unexpected token \n"RESET);
+    if(errnum == 2)
+        printf(RED"syntax error near '|'\n"RESET);
+    if(errnum == 3)
+        printf(RED"syntax error near heardoc \n"RESET);
+        
+}
+
+int syntax_erreur(t_tokenlist *head)
+{
 	int i = 0;
 	int j = 0;
 	t_tokenlist *current = head;
@@ -64,30 +75,22 @@ int sintax_erreur(t_tokenlist *head)
 			while (current->content[i] != '\0')
 			{
 				if (current->content[i] == ';' || current->content[i] == '\\')
-					return (printf(RED"Syntax error: unexpected token '%c'\n"RESET, current->content[i]), ++j);
+					return (ft_error_msg(0), ++j);
 				i++;
 			}
-			i = 0;
-			while (current->content[i] != '\0')
-				i++;
-			if( i==1 && (current->content[0]=='\'' || current->content[i-1]=='\"'))
-				return (printf(RED"Syntax error: unclosed quotes\n"RESET), ++j);
-			if((current->content[0]=='\'' && current->content[i-1]!='\'') ||
-				(current->content[0]=='\"' && current->content[i-1]!='\"'))
-				return (printf(RED"Syntax error: unclosed quotes\n"RESET), ++j);
 		}
 		if(current->type != comnd && (current->next == NULL || current->next->type != comnd))
-			return (printf(RED"syntax error near unexpected token `newline'\n"RESET), ++j);
+			return (ft_error_msg(1), ++j);
 		if(current->type == PIPE && (current->prev == NULL || current->prev->type != comnd) )
-			return (printf(RED"syntax error near unexpected token `|'\n"RESET), ++j);
+			return (ft_error_msg(2), ++j);
 		if(current->type == HEREdocument && (current->prev == NULL || current->prev->type != comnd))
-			return (printf(RED"syntax error near unexpected token `newline'\n"RESET), ++j);
+			return (ft_error_msg(3), ++j);
 		current = current->next;
 	}
 	return j;
 }
 
-void merge_file_cmd(t_tokenlist **head) 
+void    merge_file_cmd(t_tokenlist **head) 
 {
     if (!head || !*head) 
         return;
@@ -145,8 +148,9 @@ t_check *extract_cmd_quat(char *line, int i, char c)
     }
     
     strackt->str = ft_lstnewn(ft_strdup(cmd));
-    strackt->i = j + 1;
+    strackt->i = j + 1; 
     free(cmd);
+   
     return strackt;
 }
 
@@ -157,7 +161,7 @@ t_check *extract_cmd(char *line, int i)
     int k = 0;
     
     while (line[j] && line[j] != ' ' && line[j] != '|' && 
-           line[j] != '<' && line[j] != '>')
+           line[j] != '<' && line[j] != '>' && line[j] != '\'' && line[j] != '\"')
         j++;
 
     cmd = malloc(j - i + 1);
@@ -180,54 +184,104 @@ t_check *extract_cmd(char *line, int i)
     return strackt;
 }
 
-int ssplit_line(char *line, t_tokenlist **head)
+void    skip_whitespaces(int *i, char *line)
 {
-    int i = 0;
-    
+    while (line[*i] == ' ' || line[*i] == '\t')
+        (*i)++;
+}
+
+void merg_last_with_one(t_tokenlist **lst)
+{
+    if (!lst || !*lst || !(*lst)->next)
+        return;
+
+    t_tokenlist *current = *lst;
+    while (current->next != NULL)
+        current = current->next;
+
+    t_tokenlist *prevvv = current->prev;
+    if (!prevvv)
+        return;
+    if(current->type==0 && prevvv->type==0)
+    {
+    size_t new_len = ft_strlen(current->content) + ft_strlen(prevvv->content) + 1;
+    char *new_content = malloc(new_len);
+    if (!new_content)
+        return;
+
+    ft_strlcpy(new_content, prevvv->content, new_len);
+    ft_strlcat(new_content, current->content, new_len);
+
+    free(prevvv->content);
+    prevvv->content = new_content;
+
+    prevvv->next = current->next;
+    if (current->next)
+        current->next->prev = prevvv;
+
+    free(current->content);
+    free(current);
+    }
+}
+
+void    handle_operators(int *i, char *line, t_tokenlist **head)
+{
+    if (line[*i] == '|') 
+    {
+        ft_lstadd_backn(head, ft_lstnewn(ft_strdup("|")));
+        (*i)++;
+    }
+    else if (line[*i] == '<' && line[(*i)+1] == '<')
+        {
+        ft_lstadd_backn(head, ft_lstnewn(ft_strdup("<<")));
+        (*i) += 2;
+    }
+    else if (line[*i] == '<') 
+    {
+        ft_lstadd_backn(head, ft_lstnewn(ft_strdup("<")));
+        (*i)++;
+    }
+    else if (line[*i] == '>' && line[(*i)+1] == '>') 
+    {
+        ft_lstadd_backn(head, ft_lstnewn(ft_strdup(">>")));
+        (*i) += 2;
+    }
+    else if (line[*i] == '>') 
+    {
+        ft_lstadd_backn(head, ft_lstnewn(ft_strdup(">")));
+        (*i)++;
+    }
+}
+ 
+int split_line(char *line, t_tokenlist **head)
+{
+    t_check *result;
+    int     i;
+    int     j;
+
+    i = 0;
     while (line[i] != '\0')
     {
-        while (line[i] == ' ' || line[i] == '\t')
-            i++;
-            
+        skip_whitespaces(&i, line);
         if (line[i] == '\0')
-            break;
-
+            break ;
         if (line[i] == '\'' || line[i] == '\"')
         {
-            t_check *result = extract_cmd_quat(line, i, line[i]);
+            j = i;
+             result = extract_cmd_quat(line, i, line[i]);
             if (!result)
                 return printf(RED"Syntax error: unclosed quotes\n"RESET), 1;
-                
             ft_lstadd_backn(head, result->str);
             i = result->i;
             free(result);
+            if(line[j-1] != ' ' && j > 0)
+                merg_last_with_one(head);
         }
         else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
-        {
-            if (line[i] == '|') {
-                ft_lstadd_backn(head, ft_lstnewn(ft_strdup("|")));
-                i++;
-            }
-            else if (line[i] == '<' && line[i+1] == '<') {
-                ft_lstadd_backn(head, ft_lstnewn(ft_strdup("<<")));
-                i += 2;
-            }
-            else if (line[i] == '<') {
-                ft_lstadd_backn(head, ft_lstnewn(ft_strdup("<")));
-                i++;
-            }
-            else if (line[i] == '>' && line[i+1] == '>') {
-                ft_lstadd_backn(head, ft_lstnewn(ft_strdup(">>")));
-                i += 2;
-            }
-            else if (line[i] == '>') {
-                ft_lstadd_backn(head, ft_lstnewn(ft_strdup(">")));
-                i++;
-            }
-        }
+            handle_operators(&i, line, head);
         else
         {
-            t_check *result = extract_cmd(line, i);
+            result = extract_cmd(line, i);
             if (!result)
                 return printf(RED"Memory allocation error\n"RESET), 1;
                 
@@ -239,32 +293,40 @@ int ssplit_line(char *line, t_tokenlist **head)
     return 0;
 }
 
-int main()
+void    init_shell(char *s)
 {
-	t_tokenlist *head;
-	char *s;
-	int j;
+    t_tokenlist *head;
+    // t_tree_list *tree;
+
+    head = NULL;
+    if(split_line(s,&head) == 0)
+	{   
+	    if(syntax_erreur(head) == 0)
+	    {
+		    merge_file_cmd(&head);
+		    print_nodes(head);
+	    }
+	}
+	free_list(head);
+}
+
+int main(int argc, char **argv, char **envp)
+{
+	char        *s;
+    
+    (void)envp;
+    (void)argv;
+    if (argc != 1)
+        return (printf(RED"invalid number of arguments\nUsage: ./minishell\n"RESET), 1);
 	while (1)
 	{
-		head = NULL;  
 		s = readline(GREEN"minishell> "RESET);
 		if (!s)
 			break;
 		if (*s) 
-		add_history(s);
-		j = ssplit_line(s, &head);
-		if(j==0)
-		{
-			j=sintax_erreur(head);
-			if(j == 0)
-			{
-				merge_file_cmd(&head);
-				print_nodes(head);
-			}
-		}
-		free_list(head);
+		    add_history(s);
+        init_shell(s);
 		free(s);
 	}
-	
 	return 0;
 }

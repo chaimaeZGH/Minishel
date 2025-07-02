@@ -1,0 +1,67 @@
+//*******************//
+
+// Check for pipes:
+// in you start from the last and you found pipe then the pipe gona be rooth
+// if not the cmd it self is the rooth and ther is no left right
+// The right branch is the part after the last pipe ('|').
+// The left branch is everything before the last pipe.
+
+
+
+
+typedef struct s_tokenlist
+{
+	char			*content;
+	struct s_tokenlist      	*prev;
+	struct s_tokenlist      	*next;
+	t_type_list		type;
+}	                t_tokenlist;
+
+
+
+
+
+typedef struct s_cmdlist
+{
+	int			here_doc_fd;
+    char		**cmd;
+    t_tokenlist	*args;
+    t_tokenlist	*out;
+    t_tokenlist	*in;
+}			t_cmdlist;
+
+typedef struct s_tree_list
+{
+	t_type_list			type;
+	t_cmdlist			*cmd;
+	struct s_tree_list	*right;
+	struct s_tree_list	*left;
+}						t_tree_list;
+
+
+
+
+Recursive Tree Construction Logic
+Input: A list of tokens (char **tokens, or a linked list, etc.).
+
+Step 1: Search for the last pipe (|).
+
+>>If you find one:
+
+	Split the tokens into two parts:
+
+	left = before last pipe
+
+	right = after last pipe
+
+	Create a node with command = "|".
+
+	Recursively build left_subtree and right_subtree, and assign them to left and right.
+
+>>If no pipe found:
+
+	This is a single command.
+
+	Create a node with command = full_command_string.
+
+	Set left = NULL, right = NULL.

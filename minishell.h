@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/24 07:06:04 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/28 20:41:57 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@
 #include <readline/history.h>
 #include "./libft/libft.h"
 
-
-typedef enum a_type_list{
+typedef enum a_type_list
+{
 	comnd,
 	PIPE,
 	INredirection,
@@ -60,30 +60,30 @@ typedef struct s_tokenlist
 
 typedef struct s_check
 {
-	int i;
-	t_tokenlist *str;
-} t_check;
+	int			i;
+	t_tokenlist	*str;
+}				t_check;
 
-// newshit
-// {
-//     t_tokenlist in;
-//     t_tokenlist out;
-//     t_tokenlist args;
-// }
+typedef struct s_cmdlist
+{
+	int			here_doc_fd;
+    char		**cmd;
+    t_tokenlist	*args;
+    t_tokenlist	*out;
+    t_tokenlist	*in;
+}			t_cmdlist;
 
 typedef struct s_tree_list
 {
-	t_type_list             type;
-	t_tokenlist      *cmd; //newshit
-	struct s_tree_list      *right;
-	struct s_tree_list      *left;
-}                           t_tree_list;
+	t_type_list			type;
+	t_cmdlist			*cmd;
+	struct s_tree_list	*right;
+	struct s_tree_list	*left;
+}						t_tree_list;
 
 t_tokenlist *ft_lstnewn(void *content);
 t_tokenlist *ft_lstlastn(t_tokenlist *lst);
 void		ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new);
-
-
 
 
 #endif

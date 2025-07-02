@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/24 07:05:52 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/06/28 02:54:25 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ t_tokenlist *ft_lstnewn(void *content)
 	head->next = NULL;
 	head->prev = NULL;
 	
-	if (content == NULL) {
+	if (content == NULL) 
+	{
 		head->type = comnd;
 		return head;
 	}
