@@ -39,8 +39,8 @@ int ft_echo(char    **av)
     return (0);
 }
 
-int main ()
-{
-    char *av[6] = { "echo", "-nnnn", "-nnnnnn" ,"reda", NULL };
-    ft_echo(av);
-}
+// int main ()
+// {
+//     char *av[6] = { "echo", "-nnnn", "-nnnnnn" ,"reda", NULL };
+//     ft_echo(av);
+// }

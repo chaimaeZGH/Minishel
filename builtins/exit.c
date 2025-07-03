@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 12:07:43 by rroundi           #+#    #+#             */
-/*   Updated: 2025/06/12 15:55:35 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/03 13:16:44 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ int ft_exit(char **av)
     exit(exit_n);
 }
 
-int main ()
-{
-    char *av[3] = {"exit", "2"}; 
-    ft_exit(av);
-}
+// int main ()
+// {
+//     char *av[3] = {"exit", "2"}; 
+//     ft_exit(av);
+// }

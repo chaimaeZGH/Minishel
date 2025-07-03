@@ -14,3 +14,7 @@ int ft_pwd(void)
     free(cwd);
     return (0);
 }
+// int main ()
+// {
+//     ft_pwd();
+// }

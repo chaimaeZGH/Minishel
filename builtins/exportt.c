@@ -31,42 +31,7 @@ char    **get_values(char   *av)
     return (div);
 }
 
-int env_idx(char **env)
-{
-    int i;
-
-    i = 0;
-    while(env[i])
-        i++;
-    return (i);
-}
-
-char **env_dup(char **env)
-{
-    int i;
-    int idx;
-    char    **e_copy;
-
-    i = 0;
-    idx = env_idx(env);
-    e_copy = malloc(sizeof(char *) * (idx + 1));
-    while (env[i])
-    {
-        e_copy[i] =  ft_strdup(env[i]);
-        i++;
-    }
-    e_copy[i] = NULL;
-    return (e_copy);
-}
-
-void    set_env_variables(char  **env, char *var, char *value)
-{
-    char **e_copy;
-
-    e_copy = env_dup(env);
-}
-
-int ft_export(char **av, char **env)
+int ft_export(char **av, t_env c_env)
 {
     int i;
     int ret;

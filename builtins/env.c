@@ -1,22 +1,22 @@
 #include "../minishell.h"
 
-int ft_env(char **env)
+int ft_env(t_env    *env)
 {
-    int i;
+    t_env *curr;
 
-    i = 0;
-    if(!env)
-        return (1);
-    while (env[i])
+    if (!env)
+        return(1);
+    curr = env;
+    while (curr != NULL)
     {
-        ft_putendl_fd(env[i], 1);
-        i++;
+        printf("%s=%s\n", curr->key, curr->value);
+        curr = curr->next;
     }
     return (0);
 }
 
-int main (int ac, char **av, char **env)
-{
-    ft_env(env);
-    return (0);
-}
+// int main (int ac, char **av, char **env)
+// {
+//     ft_env(env);
+//     return (0);
+// }
