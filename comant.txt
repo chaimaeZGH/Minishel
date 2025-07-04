@@ -46,7 +46,7 @@ Input: A list of tokens (char **tokens, or a linked list, etc.).
 
 Step 1: Search for the last pipe (|).
 
->>If you find one:
+>> If you find one:
 
 	Split the tokens into two parts:
 
@@ -58,7 +58,7 @@ Step 1: Search for the last pipe (|).
 
 	Recursively build left_subtree and right_subtree, and assign them to left and right.
 
->>If no pipe found:
+>> If no pipe found:
 
 	This is a single command.
 

@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/06/28 20:41:57 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/04 02:29:10 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,9 @@ typedef struct s_tree_list
 t_tokenlist *ft_lstnewn(void *content);
 t_tokenlist *ft_lstlastn(t_tokenlist *lst);
 void		ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new);
+void fill_tree(t_tokenlist **head, t_tree_list *tree);
+void free_tree(t_tree_list *tree);
+void free_list(t_tokenlist *head);
 
 
 #endif

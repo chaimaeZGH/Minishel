@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/02 22:13:19 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/04 02:41:42 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,18 +296,22 @@ int split_line(char *line, t_tokenlist **head)
 void    init_shell(char *s)
 {
     t_tokenlist *head;
-    // t_tree_list *tree;
+    t_tree_list *tree;
 
     head = NULL;
+    tree=NULL;
     if(split_line(s,&head) == 0)
 	{   
 	    if(syntax_erreur(head) == 0)
 	    {
 		    merge_file_cmd(&head);
-		    print_nodes(head);
+            fill_tree(&head, tree);
+            // print_tree(tree,0);
+		    // print_nodes(head);
 	    }
 	}
 	free_list(head);
+    free_tree(tree);
 }
 
 int main(int argc, char **argv, char **envp)
