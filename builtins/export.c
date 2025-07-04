@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:33:22 by rroundi           #+#    #+#             */
-/*   Updated: 2025/07/03 20:15:06 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/03 23:38:53 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ char    **get_values(char   *av)
     return (div);
 }
 
+
+// you need to expand variables if they needed expansion before calling the export function
 int ft_export(char **av, t_env **c_env)
 {
     t_env   *sorted;

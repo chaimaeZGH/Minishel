@@ -25,5 +25,7 @@ int ft_cd(t_env **c_env, char **av);
 void print_env_list(t_env *head);
 t_env   *sort(t_env *env);
 int ft_export(char **av, t_env **c_env);
+int if_valid(char *av);
+int ft_unset(t_env  **env, char **av);
 
 #endif

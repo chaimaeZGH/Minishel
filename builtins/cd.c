@@ -41,7 +41,7 @@ int ft_cd(t_env **c_env, char **av)
             return (-1);
         }
         cwd = envv->value;
-        if (chdir(cwd) != 0)
+        if (chdir(cwd) != 0)//chdit(path);
             perror("cd");
     }
     else if (args_count(av) == 2)

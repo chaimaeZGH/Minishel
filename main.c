@@ -20,10 +20,12 @@ int main (int ac, char **av, char **env)
     av = NULL;
     ac = 0;
     t_env *c_env= copy_env(env);
-    // print_env_list(c_env);
+// '    // print_env_list(c_env);
     char *ad[3] = {"export", "ZZ=NUMBER1", NULL};
-    char *az[3] = {"export", NULL};
+    char *as[3] = {"unset", "ZZ", NULL};
+    char *az[2] = {"export", NULL};
     ft_export(ad, &c_env);
-    printf("AAAAA\n");
+    ft_export(az, &c_env);
+    ft_unset(&c_env, as);
     ft_export(az, &c_env);
 }
