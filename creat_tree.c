@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/04 18:14:37 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/04 18:14:57 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ t_tree_list *create_tree(t_tokenlist **head)
     if (!cmd) 
     {
         free(tree);
-        return NULL;a
+        return NULL;
     }
     cmd->here_doc_fd = -1;
     cmd->cmd = NULL;
