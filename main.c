@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/04 02:41:42 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/04 16:38:14 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,7 +311,6 @@ void    init_shell(char *s)
 	    }
 	}
 	free_list(head);
-    free_tree(tree);
 }
 
 int main(int argc, char **argv, char **envp)

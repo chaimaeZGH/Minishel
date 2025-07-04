@@ -6,39 +6,12 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/04 02:55:07 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/04 17:02:42 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-void free_cmdlist(t_cmdlist *cmd)
-{
-    if (!cmd)
-        return;
 
-    if (cmd->cmd)
-    {
-        for (int i = 0; cmd->cmd[i]; i++)
-            free(cmd->cmd[i]);
-        free(cmd->cmd);
-    }
-
-    free_list(cmd->args);
-    free_list(cmd->out);
-    free_list(cmd->in);
-    
-    free(cmd);
-}
-
-void free_tree(t_tree_list *tree)
-{
-    if (!tree)
-        return;
-    free_tree(tree->right);
-    free_tree(tree->left);
-    free_cmdlist(tree->cmd);
-    free(tree);
-}
 
 int check_pipe (t_tokenlist *head)
 {
@@ -54,7 +27,7 @@ int check_pipe (t_tokenlist *head)
 t_tree_list *create_tree(t_tokenlist **head)
 {
     t_tree_list *tree;
-    t_tokenlist *current;
+    t_tokenlist *current = NULL;
     t_tokenlist *argm = NULL;
     t_tokenlist *outs = NULL;
     t_tokenlist *ins = NULL;
@@ -80,33 +53,28 @@ t_tree_list *create_tree(t_tokenlist **head)
     cmd->args = NULL;
     cmd->out = NULL;
     cmd->in = NULL;
-
-    current = *head;
-    while (current != NULL)
+    while (*head != NULL)
     {
+        current = *head;
+        *head = (*head)->next;
+        current->next = NULL;
+        current->prev = NULL;
         if (current->type == comnd)
         {
             if (argm == NULL) 
-            {
-                argm = current;
-                last_arg = argm;
-            } 
+                argm = last_arg = current;
             else 
             {
                 last_arg->next = current;
                 current->prev = last_arg;
                 last_arg = current;
-                
             }
-            printf("%u %s\n",last_arg->type, last_arg->content);
+            printf("%u %s\n", current->type, current->content);
         }
         else if (current->type == INredirection || current->type == HEREdocument)
         {
             if (ins == NULL) 
-            {
-                ins = current;
-                last_in = ins;
-            } 
+                ins = last_in = current;
             else 
             {
                 last_in->next = current;
@@ -118,10 +86,7 @@ t_tree_list *create_tree(t_tokenlist **head)
         else if (current->type == OUTappend || current->type == OUTredirection)
         {
             if (outs == NULL) 
-            {
-                outs = current;
-                last_out = outs;
-            } 
+                outs = last_out = current;
             else 
             {
                 last_out->next = current;
@@ -130,7 +95,6 @@ t_tree_list *create_tree(t_tokenlist **head)
             }
             printf("%u %s\n",last_out->type, last_out->content);
         }
-        current = current->next;
     }
 
     if (last_arg) last_arg->next = NULL;
