@@ -15,17 +15,49 @@
 //     printf("%s\n",cwd);
 //     print_env_list(c_env);
 // }
+// int main (int ac, char **av, char **env)
+// {
+//     av = NULL;
+//     ac = 0;
+//         print_env_list(c_env);
+//     char *an[3] = {"export", "ZZ", NULL};
+//     char *ad[3] = {"export", "ZZ=44", NULL};
+//     char *az[2] = {"export", NULL};
+//     printf("\n\n");
+//     ft_export(ad, &c_env);
+//     printf("\n\n");
+//     ft_export(an, &c_env);
+//     ft_export(az, &c_env);
+//     printf("\n\n");
+//     print_env_list(c_env);
+// }
+
+// int main (int ac, char **arg, char **env)
+// {
+//     (void)ac;
+//     (void)arg;
+//     t_env *c_env= copy_env(env);
+//     print_env_list(c_env);
+//     printf("\n\n");
+//     char **av = to_array(c_env);
+//     int i = 0;
+//     while (av[i])
+//     {
+//         printf("%s\n", av[i]);
+//         i++;
+//     }
+// }
+
 int main (int ac, char **av, char **env)
 {
-    av = NULL;
-    ac = 0;
+    (void)av;
+    (void)ac;
     t_env *c_env= copy_env(env);
-// '    // print_env_list(c_env);
-    char *ad[3] = {"export", "ZZ=NUMBER1", NULL};
-    char *as[3] = {"unset", "ZZ", NULL};
-    char *az[2] = {"export", NULL};
-    ft_export(ad, &c_env);
-    ft_export(az, &c_env);
-    ft_unset(&c_env, as);
-    ft_export(az, &c_env);
+    char **er =  get_path("ls",c_env);
+    int i = 0;
+    while (er[i])
+    {
+        printf("%s\n", er[i]);
+        i++;
+    }
 }

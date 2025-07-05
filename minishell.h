@@ -27,5 +27,7 @@ t_env   *sort(t_env *env);
 int ft_export(char **av, t_env **c_env);
 int if_valid(char *av);
 int ft_unset(t_env  **env, char **av);
+char    **to_array(t_env    *env);
+char    **get_path(char  *cmd, t_env  *env);
 
 #endif
