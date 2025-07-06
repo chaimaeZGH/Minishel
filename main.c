@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/06 22:49:07 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/06 23:52:23 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,6 +198,39 @@ void    skip_whitespaces(int *i, char *line)
     while (line[*i] == ' ' || line[*i] == '\t')
         (*i)++;
 }
+void merge_last_with_previous(t_tokenlist **lst)
+{
+    t_tokenlist *current;
+    t_tokenlist *last;
+    size_t new_len;
+    char *new_content;
+    
+    if (!lst || !*lst || !(*lst)->next)
+        return;
+    last = *lst;
+    while (last->next != NULL)
+        last = last->next;
+        
+    current = last->prev;
+    if (!current)
+        return;
+    if (last->type == 0 && current->type == 0)
+    {
+        new_len = ft_strlen(last->content) + ft_strlen(current->content) + 1;
+        new_content = malloc(new_len);
+        if (!new_content)
+            return;
+        ft_strlcpy(new_content, current->content, new_len);
+        ft_strlcat(new_content, last->content, new_len);
+        free(current->content);
+        current->content = new_content;
+        current->next = last->next;
+        if (last->next)
+            last->next->prev = current;
+        free(last->content);
+        free(last);
+    }
+}
 
 void merg_last_with_one(t_tokenlist **lst)
 {
@@ -265,6 +298,7 @@ int split_line(char *line, t_tokenlist **head)
     t_check *result;
     int     i;
     int     j;
+    t_tokenlist *ll;//
 
     i = 0;
     while (line[i] != '\0')
@@ -280,6 +314,8 @@ int split_line(char *line, t_tokenlist **head)
                 return printf(RED"Syntax error: unclosed quotes\n"RESET), 1;
             ft_lstadd_backn(head, result->str);
             i = result->i;
+            if(i+1 != ' ')
+                ll=result->str;
             free(result);
             if(line[j-1] != ' ' && j > 0)
                 merg_last_with_one(head);
@@ -291,11 +327,12 @@ int split_line(char *line, t_tokenlist **head)
             result = extract_cmd(line, i);
             if (!result)
                 return printf(RED"Memory allocation error\n"RESET), 1;
-                
             ft_lstadd_backn(head, result->str);
             i = result->i;
             free(result);
         }
+        if(ll != NULL)
+            merge_last_with_previous(head);
     }
     return 0;
 }
