@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/06 16:07:37 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/06 19:01:35 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ typedef struct s_tree_list
 	struct s_tree_list	*left;
 }						t_tree_list;
 
-void print_ast_topdown(t_tree_list *root);//deleet
+void		print_ast_topdown(t_tree_list *root);//deleet
 
 t_tree_list *create_tree(t_tokenlist **head);
 t_tokenlist *ft_lstnewn(void *content);
@@ -89,6 +89,7 @@ t_tokenlist *ft_lstlastn(t_tokenlist *lst);
 void		ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new);
 void		free_list(t_tokenlist *head);
 void		free_tree(t_tree_list *tree);
+void print_nodes(t_tokenlist *head);
 
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/06 17:27:37 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/06 22:40:52 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ char *map_type(t_type_list type)
 
 void print_nodes(t_tokenlist *head)
 {
-	t_tokenlist *current = head;
+    t_tokenlist *current;
+
+	current = head;
 	while (current != NULL)
 	{
 		printf(BLUE"Content: [%s], "YELLOW"type: %s \n"RESET, current->content, map_type(current->type));
@@ -62,14 +64,17 @@ void    ft_error_msg(int errnum)
         printf(RED"syntax error near '|'\n"RESET);
     if(errnum == 3)
         printf(RED"syntax error near heardoc \n"RESET);
-        
 }
 
 int syntax_erreur(t_tokenlist *head)
 {
-	int i = 0;
-	int j = 0;
-	t_tokenlist *current = head;
+    int         i;
+    int         j;
+    t_tokenlist *current;
+
+	i = 0;
+	j = 0;
+	current = head;
 	while (current != NULL)
 	{
 		if (current->type == comnd)
@@ -94,9 +99,12 @@ int syntax_erreur(t_tokenlist *head)
 
 void    merge_file_cmd(t_tokenlist **head) 
 {
+    t_tokenlist *current;
+    t_tokenlist *next_node;
+
     if (!head || !*head) 
         return;
-    t_tokenlist *current = *head;
+    current = *head;
     while (current) 
     {
         if ((current->type == INredirection && ft_strncmp(current->content, "<",1) == 0) ||
@@ -104,7 +112,7 @@ void    merge_file_cmd(t_tokenlist **head)
             (current->type == HEREdocument && ft_strncmp(current->content, "<<",2) == 0) ||
             (current->type == OUTappend && ft_strncmp(current->content, ">>",2) == 0))
         {
-            t_tokenlist *next_node = current->next;
+            next_node = current->next;
             if (next_node) 
 			{
                 next_node->type = current->type;
@@ -126,29 +134,28 @@ void    merge_file_cmd(t_tokenlist **head)
 t_check *extract_cmd_quat(char *line, int i, char c)
 {
     char *cmd;
-    int j = i + 1;
-    int k = 0;
+    t_check *strackt;
+    int j;
+    int k;
 
+    j = i + 1;
+    k = 0;
     while (line[j] && line[j] != c)
         j++;
-    
     if (line[j] == '\0')
         return NULL;
-
     cmd = malloc(j - i + 2);
     if (!cmd)
         return NULL;
-
     while (i <= j)
         cmd[k++] = line[i++];
     cmd[k] = '\0';
-    
-    t_check *strackt = malloc(sizeof(t_check));
-    if (!strackt) {
+    strackt = malloc(sizeof(t_check));
+    if (!strackt) 
+    {
         free(cmd);
         return NULL;
     }
-    
     strackt->str = ft_lstnewn(ft_strdup(cmd));
     strackt->i = j + 1; 
     free(cmd);
@@ -159,27 +166,27 @@ t_check *extract_cmd_quat(char *line, int i, char c)
 t_check *extract_cmd(char *line, int i)
 {
     char *cmd;
-    int j = i;
-    int k = 0;
-    
+    t_check *strackt;
+    int j;
+    int k;
+ 
+    j = i;
+    k = 0;
     while (line[j] && line[j] != ' ' && line[j] != '|' && 
            line[j] != '<' && line[j] != '>' && line[j] != '\'' && line[j] != '\"')
         j++;
-
     cmd = malloc(j - i + 1);
     if (!cmd)
         return NULL;
-
     while (i < j)
         cmd[k++] = line[i++];
     cmd[k] = '\0';
-    
-    t_check *strackt = malloc(sizeof(t_check));
-    if (!strackt) {
+    strackt = malloc(sizeof(t_check));
+    if (!strackt) 
+    {
         free(cmd);
         return NULL;
     }
-    
     strackt->str = ft_lstnewn(ft_strdup(cmd));
     strackt->i = j;
     free(cmd);
@@ -194,33 +201,31 @@ void    skip_whitespaces(int *i, char *line)
 
 void merg_last_with_one(t_tokenlist **lst)
 {
+    t_tokenlist *current;
+    t_tokenlist *prevvv;
+    size_t new_len;
+
     if (!lst || !*lst || !(*lst)->next)
         return;
-
-    t_tokenlist *current = *lst;
+    current = *lst;
     while (current->next != NULL)
         current = current->next;
-
-    t_tokenlist *prevvv = current->prev;
+    prevvv = current->prev;
     if (!prevvv)
         return;
-    if(current->type==0 && prevvv->type==0)
+    if (current->type==0 && prevvv->type==0)
     {
-    size_t new_len = ft_strlen(current->content) + ft_strlen(prevvv->content) + 1;
+    new_len = ft_strlen(current->content) + ft_strlen(prevvv->content) + 1;
     char *new_content = malloc(new_len);
     if (!new_content)
         return;
-
     ft_strlcpy(new_content, prevvv->content, new_len);
     ft_strlcat(new_content, current->content, new_len);
-
     free(prevvv->content);
     prevvv->content = new_content;
-
     prevvv->next = current->next;
     if (current->next)
         current->next->prev = prevvv;
-
     free(current->content);
     free(current);
     }
@@ -313,6 +318,7 @@ void    init_shell(char *s)
             tree = create_tree(&head);
             //replace_expend(tree);
             print_ast_topdown(tree);
+            // print_nodes(head);
 	    }
         else
             free_list(head);
@@ -321,11 +327,8 @@ void    init_shell(char *s)
         free_list(head);
     free(s);
     free_tree(tree);
-    if(tree != NULL)
-        printf("exist tree\n");
-    print_ast_topdown(tree);
-}
 
+}
 
 int main(int argc, char **argv, char **envp)
 {

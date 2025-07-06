@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/05 23:05:01 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/06 21:13:06 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 t_tokenlist *ft_lstnewn(void *content)
 {
-	t_tokenlist *head = malloc(sizeof(t_tokenlist));
+	t_tokenlist *head;
+
+	head = malloc(sizeof(t_tokenlist));
 	if (head == NULL)
 		return NULL;
 		
