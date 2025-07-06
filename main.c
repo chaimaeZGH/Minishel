@@ -48,16 +48,25 @@
 //     }
 // }
 
+// int main (int ac, char **av, char **env)
+// {
+//     (void)av;
+//     (void)ac;
+//     t_env *c_env= copy_env(env);
+//     char **er =  get_path("ls",c_env);
+//     int i = 0;
+//     while (er[i])
+//     {
+//         printf("%s\n", er[i]);
+//         i++;
+//     }
+// }
+
 int main (int ac, char **av, char **env)
 {
     (void)av;
     (void)ac;
-    t_env *c_env= copy_env(env);
-    char **er =  get_path("ls",c_env);
-    int i = 0;
-    while (er[i])
-    {
-        printf("%s\n", er[i]);
-        i++;
-    }
+    t_env *c_env = copy_env(env);
+    char *pat = path("lsff", c_env);
+    printf("%s\n", pat);
 }

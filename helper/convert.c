@@ -67,4 +67,27 @@ char    **get_path(char  *cmd, t_env  *env)
     free(cmd);
     return (all_paths);
 }
-// next step check all paths with access the return the right path to use it for the execve!!
+
+char    *path(char  *cmd, t_env *env)
+{
+    char    **all_paths;
+    int     i;
+    char    *path;
+
+    path = NULL;
+    i = 0;
+    all_paths = get_path(cmd, env);
+    if (!all_paths)
+        return (NULL);
+    while (all_paths[i])
+    {
+        if (access(all_paths[i], X_OK) == 0)
+        {
+            path = ft_strdup(all_paths[i]);
+            break;
+        }
+        i++;
+    }
+    free_arr(all_paths);
+    return (path);
+}
