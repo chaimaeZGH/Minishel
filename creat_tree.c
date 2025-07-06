@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/06 17:44:51 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/06 20:45:45 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,11 @@ void free_s_cmd(t_cmdlist *cmd)
 void free_tree(t_tree_list *tree)
 {
     if (!tree)
-    {
-        printf("ll\n");
         return;
-    }
-    free_s_cmd(tree->cmd);
-    if(tree->right != NULL)
-        free_tree(tree->right);
-    if(tree->left != NULL)
-        free_tree(tree->left);
+    if(tree->type != PIPE)
+        free_s_cmd(tree->cmd);
+    free_tree(tree->right);
+    free_tree(tree->left);
     free(tree);
 }
 
@@ -94,7 +90,6 @@ void fill_tree(t_cmdlist *cmd, t_tokenlist *original)
             ft_lstadd_backn(&cmd->in, ft_lstnewnn(ft_strdup(head->content),head->type));
         if (head->type == OUTappend || head->type == OUTredirection)
             ft_lstadd_backn(&cmd->out, ft_lstnewnn(ft_strdup(head->content),head->type));
-
         head = head->next;
     }
 }
@@ -108,16 +103,17 @@ t_tree_list *create_tree(t_tokenlist **head)
     if (!tree)
         return NULL;
 
-    tree->cmd = malloc(sizeof(t_cmdlist));
-    if (!tree->cmd)
-    {
-        free(tree);
-        return NULL;
-    }
+    
     
     t_tokenlist *last_p = last_pipe(*head);
     if (last_p == NULL)
     {
+        tree->cmd = malloc(sizeof(t_cmdlist));
+        if (!tree->cmd)
+        {
+            free(tree);
+            return NULL;
+        }
         tree->right = NULL;
         tree->left = NULL;
         tree->type = comnd;
@@ -127,8 +123,7 @@ t_tree_list *create_tree(t_tokenlist **head)
         tree->cmd->in = NULL;
         tree->cmd->out = NULL;
         fill_tree(tree->cmd, *head);
-        free_list(*head);
-        *head = NULL;   
+        free_list(*head);  
     }
     else
     {

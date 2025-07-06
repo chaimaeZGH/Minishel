@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/06 17:27:37 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/06 20:34:39 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,11 +321,8 @@ void    init_shell(char *s)
         free_list(head);
     free(s);
     free_tree(tree);
-    if(tree != NULL)
-        printf("exist tree\n");
-    print_ast_topdown(tree);
-}
 
+}
 
 int main(int argc, char **argv, char **envp)
 {
