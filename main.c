@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/04 16:38:14 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/06 01:31:24 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ void free_list(t_tokenlist *head)
 		free(tmp);
 	}
 }
+
+
 void    ft_error_msg(int errnum)
 {
     if(errnum == 0)
@@ -299,24 +301,26 @@ void    init_shell(char *s)
     t_tree_list *tree;
 
     head = NULL;
-    tree=NULL;
+    tree = NULL;
     if(split_line(s,&head) == 0)
 	{   
 	    if(syntax_erreur(head) == 0)
 	    {
 		    merge_file_cmd(&head);
-            fill_tree(&head, tree);
-            // print_tree(tree,0);
-		    // print_nodes(head);
+            tree = create_tree(&head);
+            print_ast_topdown(tree);
 	    }
 	}
-	free_list(head);
+    if(tree == NULL)
+        free_list(head);
+    free_tree(tree);
 }
+
 
 int main(int argc, char **argv, char **envp)
 {
-	char        *s;
     
+	char        *s;
     (void)envp;
     (void)argv;
     if (argc != 1)
