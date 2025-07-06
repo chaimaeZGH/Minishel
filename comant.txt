@@ -68,41 +68,5 @@ Step 1: Search for the last pipe (|).
 
 
 
-	t_tree_list *create_tree(t_tokenlist **head)
-{
-    t_tree_list *tree = NULL;
-    if (head == NULL)
-        return NULL;
-    tree = malloc(sizeof(t_tree_list));
-    if (tree == NULL)
-        return NULL;
-   
-    tree->cmd = malloc(sizeof(t_cmdlist));
-    if (!tree->cmd) 
-    {
-        free(tree);
-        return NULL;
-    }
-	
-    t_tokenlist *p_free;
-    t_tokenlist *last_p = last_pipe(*head);
-    if (last_p == NULL)
-    {
-        fill_tree(tree->cmd, *head);
-        tree->right = NULL;
-        tree->left = NULL;
-        tree->type = comnd;
-    }
-    else
-    {
-        tree->type = PIPE;
-        tree->cmd = NULL;
-        last_p->prev->next = NULL;
-        p_free=last_p;
-        last_p = last_p->next;
-        free_list(p_free);
-        tree->right = create_tree(&last_p);
-        tree->left = create_tree(head);
-    }
-    return (tree);
-}
+check expend for "$" what ever ther must be expend nomater whats hapend
+if we start with '$' thats must not be expend for no reason it gets as character

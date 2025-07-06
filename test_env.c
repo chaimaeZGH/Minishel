@@ -2,14 +2,17 @@
 
 int main(int argc, char **argv, char **env) 
 {
-    (void)argc;  // Silence unused warnings
-    (void)argv;  // (Optional if you don't use them)
+    (void)argc;
+    (void)argv;
+    char **ptr;
 
+    ptr = env;
+    int i = 0;
     printf("Environment variables:\n");
-    for (char **ptr = env; *ptr != NULL; ptr++) 
+    while(ptr[i] != NULL)
     {
-        printf("%s\n", *ptr);
+        printf("%s\n",ptr[i]);
+        i++;
     }
-
     return 0;
 }

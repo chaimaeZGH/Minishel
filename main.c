@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/06 01:31:24 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/06 17:27:37 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,7 +294,10 @@ int split_line(char *line, t_tokenlist **head)
     }
     return 0;
 }
-
+// void replace_expend(t_tree_list *tree)
+// {
+    
+// }
 void    init_shell(char *s)
 {
     t_tokenlist *head;
@@ -308,12 +311,19 @@ void    init_shell(char *s)
 	    {
 		    merge_file_cmd(&head);
             tree = create_tree(&head);
+            //replace_expend(tree);
             print_ast_topdown(tree);
 	    }
+        else
+            free_list(head);
 	}
-    if(tree == NULL)
+    else
         free_list(head);
+    free(s);
     free_tree(tree);
+    if(tree != NULL)
+        printf("exist tree\n");
+    print_ast_topdown(tree);
 }
 
 
@@ -333,7 +343,6 @@ int main(int argc, char **argv, char **envp)
 		if (*s) 
 		    add_history(s);
         init_shell(s);
-		free(s);
 	}
 	return 0;
 }
