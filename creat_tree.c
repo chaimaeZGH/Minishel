@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/06 20:45:45 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/06 21:06:59 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,11 @@ void free_tree(t_tree_list *tree)
 
 t_tokenlist *last_pipe(t_tokenlist *head)
 {
+    t_tokenlist *current;
+
     if (!head)
         return NULL;
-    t_tokenlist *current = head;
-
+    current = head;
     while (current->next != NULL)
         current = current->next;
     while(current != NULL)
@@ -66,10 +67,11 @@ t_tokenlist *last_pipe(t_tokenlist *head)
 
 t_tokenlist *ft_lstnewnn(void *content, t_type_list ttype)
 {
-	t_tokenlist *head = malloc(sizeof(t_tokenlist));
+    t_tokenlist *head;
+
+	head = malloc(sizeof(t_tokenlist));
 	if (head == NULL)
 		return NULL;
-		
 	head->content = content;
 	head->next = NULL;
 	head->prev = NULL;
@@ -79,9 +81,11 @@ t_tokenlist *ft_lstnewnn(void *content, t_type_list ttype)
 
 void fill_tree(t_cmdlist *cmd, t_tokenlist *original)
 {
+    t_tokenlist *head;
+
     if (original == NULL)
         return ;
-    t_tokenlist *head = original;
+    head = original;
     while(head != NULL)
     {
         if (head->type == comnd)
@@ -96,16 +100,17 @@ void fill_tree(t_cmdlist *cmd, t_tokenlist *original)
 
 t_tree_list *create_tree(t_tokenlist **head)
 {
+    t_tree_list *tree;
+    t_tokenlist *last_p;
+    t_tokenlist *privius;
+    t_tokenlist *right_part;
+
     if (head == NULL || *head == NULL)
         return NULL;
-
-    t_tree_list *tree = malloc(sizeof(t_tree_list));
+    tree = malloc(sizeof(t_tree_list));
     if (!tree)
         return NULL;
-
-    
-    
-    t_tokenlist *last_p = last_pipe(*head);
+    last_p = last_pipe(*head);
     if (last_p == NULL)
     {
         tree->cmd = malloc(sizeof(t_cmdlist));
@@ -129,9 +134,9 @@ t_tree_list *create_tree(t_tokenlist **head)
     {
         tree->type = PIPE;
         tree->cmd = NULL;
-        t_tokenlist *privius = last_p->prev;
+        privius = last_p->prev;
         privius->next = NULL;
-        t_tokenlist *right_part = last_p->next;
+        right_part = last_p->next;
         right_part->prev = NULL;
         free(last_p->content);
         free(last_p);
