@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/07 20:21:33 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/07 20:35:49 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -350,57 +350,6 @@ int split_line(char *line, t_tokenlist **head)
 // {
     
 // }
-void fill_cmd_from_args(t_cmdlist *cmd)
-{
-    if (!cmd || !cmd->args)
-    {
-        cmd->cmd = NULL;
-        return;
-    }
-    int count = 0;
-    t_tokenlist *current = cmd->args;
-    while (current)
-    {
-        count++;
-        current = current->next;
-    }
-    cmd->cmd = (char **)malloc(sizeof(char *)*(count + 1));
-    if (!cmd->cmd)
-        return;
-    current = cmd->args;
-    int i = 0;
-    while (current)
-    {
-        cmd->cmd[i] = strdup(current->content);
-        if (!cmd->cmd[i])
-        {
-            while (i > 0)
-                free(cmd->cmd[--i]);
-            free(cmd->cmd);
-            cmd->cmd = NULL;
-            return;
-        }
-        i++;
-        current = current->next;
-    }
-    cmd->cmd[count] = NULL;
-    int j = 0;
-    while(cmd->cmd[j]!=NULL)
-    {
-        printf("%s\n",cmd->cmd[j]);
-        j++;
-    }
-}
-
-void fill_double_point(t_tree_list *tree)
-{
-    if (!tree)
-        return;
-    if (tree->type == comnd)
-        fill_cmd_from_args(tree->cmd);
-    fill_double_point(tree->left);
-    fill_double_point(tree->right);
-}
 
 void    init_shell(char *s)
 {
@@ -415,9 +364,8 @@ void    init_shell(char *s)
 	    {
 		    merge_file_cmd(&head);
             tree = create_tree(&head);
-            fill_double_point(tree);
             // replace_expend(tree);//
-            // print_ast_topdown(tree);
+            print_ast_topdown(tree);
             // print_nodes(head);//
 	    }
         else
