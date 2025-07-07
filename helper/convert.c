@@ -36,7 +36,7 @@ char    **to_array(t_env    *env)
 
 char    **get_path(char  *cmd, t_env  *env)
 {
-    t_env *node;
+    t_env   *node;
     char    *path;
     char    **all_paths;
     int     i;
@@ -68,7 +68,7 @@ char    **get_path(char  *cmd, t_env  *env)
     return (all_paths);
 }
 
-char    *path(char  *cmd, t_env *env)
+char    *true_path(char  *cmd, t_env *env)
 {
     char    **all_paths;
     int     i;

@@ -62,11 +62,21 @@
 //     }
 // }
 
-int main (int ac, char **av, char **env)
+// int main (int ac, char **av, char **env)
+// {
+//     (void)av;
+//     (void)ac;
+//     t_env *c_env = copy_env(env);
+//     char *pat = path("lsff", c_env);
+//     printf("%s\n", pat);
+// }
+
+int main(int ac, char **av, char **envp)
 {
-    (void)av;
+     (void)av;
     (void)ac;
-    t_env *c_env = copy_env(env);
-    char *pat = path("lsff", c_env);
-    printf("%s\n", pat);
+    char *cmd[] = {"cat","minishell.h" ,NULL};
+    t_env *env = copy_env(envp); 
+    int status = exec_bin(cmd, env);
+    printf("Command exited with status: %d\n", status);
 }
