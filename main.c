@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/07 20:21:33 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/08 20:17:25 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -384,12 +384,12 @@ void fill_cmd_from_args(t_cmdlist *cmd)
         current = current->next;
     }
     cmd->cmd[count] = NULL;
-    int j = 0;
-    while(cmd->cmd[j]!=NULL)
-    {
-        printf("%s\n",cmd->cmd[j]);
-        j++;
-    }
+    // int j = 0;
+    // while(cmd->cmd[j]!=NULL)
+    // {
+    //     printf("%s\n",cmd->cmd[j]);
+    //     j++;
+    // }
 }
 
 void fill_double_point(t_tree_list *tree)
@@ -402,7 +402,7 @@ void fill_double_point(t_tree_list *tree)
     fill_double_point(tree->right);
 }
 
-void    init_shell(char *s)
+t_tree_list     *init_shell(char *s)
 {
     t_tokenlist *head;
     t_tree_list *tree;
@@ -426,16 +426,18 @@ void    init_shell(char *s)
     else
         free_list(head);
     free(s);
-    free_tree(tree);
-
+    return (tree);
 }
 
 int main(int argc, char **argv, char **envp)
 {
     
 	char        *s;
+    t_tree_list *tree;
+    t_env   *env;
     (void)envp;
     (void)argv;
+        env = copy_env(envp);
     if (argc != 1)
         return (printf(RED"invalid number of arguments\nUsage: ./minishell\n"RESET), 1);
 	while (1)
@@ -445,7 +447,14 @@ int main(int argc, char **argv, char **envp)
 			break;
 		if (*s) 
 		    add_history(s);
-        init_shell(s);
-	}
-	return 0;
+        tree = init_shell(s);
+        if(execute(tree, &env) == 1)
+        {
+            free_tree(tree);
+            return (1);
+        }
+    }
+
+    free_tree(tree);
+    return (0);
 }

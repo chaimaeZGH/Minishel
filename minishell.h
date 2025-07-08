@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/07 17:45:21 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/08 19:39:50 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "./libft/libft.h"
+#include <string.h>
+#include <limits.h>
 
 typedef enum a_type_list
 {
@@ -90,6 +92,47 @@ void		ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new);
 void		free_list(t_tokenlist *head);
 void		free_tree(t_tree_list *tree);
 void print_nodes(t_tokenlist *head);
+
+
+
+
+// execution
+typedef struct s_env{
+    char *key;
+    char *value;
+    struct s_env *next;
+}t_env;
+
+//builtins
+
+int		ft_echo(char    **av);
+int		ft_env(t_env    *env);
+int		ft_exit(char **av);
+int 	ft_cd(t_env **c_env, char **av);
+int 	ft_export(char **av, t_env **c_env);
+int 	ft_pwd(void);
+int 	ft_unset(t_env  **env, char **av);
+
+//
+int 	print_error(char *cmd, char *msg);
+int 	error_msg(char *cmd, char *msg, char *av);
+t_env   *copy_env_list(t_env *env);
+int 	sublen(char *av);
+t_env   *find_key(t_env *head, char *key);
+void    set_env_value(t_env **head, char *key, char *value);
+t_env   *copy_env(char **env);
+void 	print_env_list(t_env *head);
+t_env   *sort(t_env *env);
+int 	if_valid(char *av);
+char    **to_array(t_env    *env);
+char    **get_path(char  *cmd, t_env  *env);
+void    free_arr(char **arr);
+char    *true_path(char  *cmd, t_env *env);
+int     exec_bin(char   **cmd, t_env    *env);
+int 	is_builtin(t_tree_list *tree);
+int 	execute(t_tree_list *tree, t_env    **env);
+int 	execute_builtins(t_tree_list *tree, t_env   **env, int flag);
+
 
 
 #endif
