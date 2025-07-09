@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/06 21:06:59 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/08 22:38:21 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,44 +102,56 @@ t_tree_list *create_tree(t_tokenlist **head)
 {
     t_tree_list *tree;
     t_tokenlist *last_p;
-    t_tokenlist *privius;
-    t_tokenlist *right_part;
 
     if (head == NULL || *head == NULL)
         return NULL;
+
+    // create_tree_node()
     tree = malloc(sizeof(t_tree_list));
     if (!tree)
         return NULL;
+    
+    tree->right = NULL;
+    tree->left = NULL;
+    tree->cmd = NULL;
+    //
+
     last_p = last_pipe(*head);
     if (last_p == NULL)
     {
+        // create_cmd_node()
         tree->cmd = malloc(sizeof(t_cmdlist));
         if (!tree->cmd)
         {
             free(tree);
             return NULL;
         }
-        tree->right = NULL;
-        tree->left = NULL;
-        tree->type = comnd;
         tree->cmd->here_doc_fd=-1;
         tree->cmd->cmd = NULL;
         tree->cmd->args = NULL;
         tree->cmd->in = NULL;
         tree->cmd->out = NULL;
+        //
+
+        tree->type = comnd;
         fill_tree(tree->cmd, *head);
         free_list(*head);  
     }
     else
     {
-        tree->type = PIPE;
-        tree->cmd = NULL;
-        privius = last_p->prev;
-        privius->next = NULL;
+        //remove_node();
+        t_tokenlist *previous;
+        t_tokenlist *right_part;
+
+        previous = last_p->prev;
+        previous->next = NULL;
         right_part = last_p->next;
         right_part->prev = NULL;
         free(last_p->content);
         free(last_p);
+        // 
+
+        tree->type = PIPE;
         tree->right = create_tree(&right_part);
         tree->left = create_tree(head);
     }

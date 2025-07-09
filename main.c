@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/07 20:35:49 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/09 02:29:49 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ int syntax_erreur(t_tokenlist *head)
 	{
 		if (current->type == comnd)
 		{
+            i = 0;
 			while (current->content[i] != '\0')
 			{
 				if (current->content[i] == ';' || current->content[i] == '\\')
@@ -306,7 +307,7 @@ int split_line(char *line, t_tokenlist **head)
     t_check *result;
     int     i;
     int     j;
-    char *ll;//
+    char *ll;
     
     ll = NULL;
     i = 0;
@@ -314,7 +315,7 @@ int split_line(char *line, t_tokenlist **head)
     {
         skip_whitespaces(&i, line);
         if (line[i] == '\0')
-            break ;
+                 ;
         if (line[i] == '\'' || line[i] == '\"')
         {
             j = i;
@@ -328,7 +329,7 @@ int split_line(char *line, t_tokenlist **head)
             if(line[j-1] != ' ' && j > 0)
                 merg_last_with_one(head);
             if(line[i] != ' ' && line[i] != '\0')
-                ll=ft_lstlastn(*head)->content;
+                ll = ft_lstlastn(*head)->content;
         }
         else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
             handle_operators(&i, line, head);
@@ -346,10 +347,81 @@ int split_line(char *line, t_tokenlist **head)
     }
     return 0;
 }
-// void replace_expend(t_tree_list *tree)
-// {
-    
-// }
+void    process_token_content(t_tokenlist *token) 
+{
+    char *new_content;
+    int i;
+    int j;
+    char quote_char;
+
+    if (!token || !token->content) 
+        return;
+    new_content = strdup(token->content);
+    if (!new_content) 
+        return;
+    i = 0;
+    j = 0;
+    quote_char = 0;
+    while (new_content[i] != '\0') 
+    {
+        if ((new_content[i] == '\'' || new_content[i] == '\"') && j < 2) 
+        {
+            if (j == 0) 
+            {
+                quote_char = new_content[i];
+                if (quote_char == '\'')
+                    new_content[i] = 1;
+                else
+                    new_content[i] = 2;
+                j = 1;
+            } 
+            else if (new_content[i] == quote_char) 
+            {
+                if (quote_char == '\'')
+                    new_content[i] = 1;
+                else
+                    new_content[i] = 2;
+                j = 0;
+            }
+        }
+        i++;
+    }
+    free(token->content);
+    token->content = new_content;
+}
+
+void replace_quotes(t_tree_list *root) 
+{
+    t_tokenlist *current_arg;
+    t_tokenlist *current_in;
+    t_tokenlist *current_out;
+
+    if (!root) 
+        return;
+    if(root->type == comnd && root->cmd)
+    {
+        current_arg = root->cmd->args;
+        current_in = root->cmd->in;
+        current_out = root->cmd->out;
+        while (current_arg) 
+        {
+            process_token_content(current_arg);
+            current_arg = current_arg->next;
+        }
+        while (current_in) 
+        {
+            process_token_content(current_in);
+            current_in = current_in->next;
+        }
+        while (current_out) 
+        {
+            process_token_content(current_out);
+            current_out = current_out->next;
+        }
+    }
+    replace_quotes(root->right);
+    replace_quotes(root->left);
+}
 
 void    init_shell(char *s)
 {
@@ -364,7 +436,7 @@ void    init_shell(char *s)
 	    {
 		    merge_file_cmd(&head);
             tree = create_tree(&head);
-            // replace_expend(tree);//
+            replace_quotes(tree);//
             print_ast_topdown(tree);
             // print_nodes(head);//
 	    }
