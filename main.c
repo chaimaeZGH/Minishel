@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/09 02:29:49 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/13 00:21:34 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,11 @@ void free_list(t_tokenlist *head)
 void    ft_error_msg(int errnum)
 {
     if(errnum == 0)
-        printf(RED"Syntax error: unexpected token ; or \\ \n"RESET);
+        printf(RED"Syntax error: unexpected token ; or \\\n"RESET);
      if(errnum == 1)
-        printf(RED"syntax error near unexpected token \n"RESET);
+        printf(RED"syntax error near unexpected token\n"RESET);
     if(errnum == 2)
         printf(RED"syntax error near '|'\n"RESET);
-    if(errnum == 3)
-        printf(RED"syntax error near heardoc \n"RESET);
 }
 
 int syntax_erreur(t_tokenlist *head)
@@ -91,8 +89,6 @@ int syntax_erreur(t_tokenlist *head)
 			return (ft_error_msg(1), ++j);
 		if(current->type == PIPE && (current->prev == NULL || current->prev->type != comnd) )
 			return (ft_error_msg(2), ++j);
-		if(current->type == HEREdocument && (current->prev == NULL || current->prev->type != comnd))
-			return (ft_error_msg(3), ++j);
 		current = current->next;
 	}
 	return j;
@@ -423,7 +419,42 @@ void replace_quotes(t_tree_list *root)
     replace_quotes(root->left);
 }
 
-void    init_shell(char *s)
+void check_for_expend(t_tree_list *root, char **env)
+{
+	t_tokenlist *current_arg;
+	t_tokenlist *current_in;
+	t_tokenlist *current_out;
+
+	if (!root) 
+		return;
+	if(root->type == comnd && root->cmd)
+	{
+		current_arg = root->cmd->args;
+		current_in = root->cmd->in;
+		current_out = root->cmd->out;
+		while (current_arg) 
+		{
+			process_expend_content(current_arg, env);
+			current_arg = current_arg->next;
+		}
+		while (current_in)   
+        
+		{
+			if(current_in->type != HEREdocument)
+				process_expend_content(current_in, env);
+			current_in = current_in->next;
+		}
+		while (current_out) 
+		{
+			process_expend_content(current_out, env);
+			current_out = current_out->next;
+		}
+	}
+	check_for_expend(root->right, env);
+	check_for_expend(root->left, env);
+}
+
+void    init_shell(char *s, char **env)
 {
     t_tokenlist *head;
     t_tree_list *tree;
@@ -437,6 +468,7 @@ void    init_shell(char *s)
 		    merge_file_cmd(&head);
             tree = create_tree(&head);
             replace_quotes(tree);//
+            check_for_expend(tree, env);
             print_ast_topdown(tree);
             // print_nodes(head);//
 	    }
@@ -454,7 +486,6 @@ int main(int argc, char **argv, char **envp)
 {
     
 	char        *s;
-    (void)envp;
     (void)argv;
     if (argc != 1)
         return (printf(RED"invalid number of arguments\nUsage: ./minishell\n"RESET), 1);
@@ -465,7 +496,7 @@ int main(int argc, char **argv, char **envp)
 			break;
 		if (*s) 
 		    add_history(s);
-        init_shell(s);
+        init_shell(s, envp);
 	}
 	return 0;
 }

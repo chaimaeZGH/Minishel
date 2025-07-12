@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/07 21:44:47 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/13 00:29:15 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,8 @@ t_tokenlist *ft_lstlastn(t_tokenlist *lst);
 void		ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new);
 void		free_list(t_tokenlist *head);
 void		free_tree(t_tree_list *tree);
-void print_nodes(t_tokenlist *head);//DELETE
+void		process_expend_content(t_tokenlist *token, char **env) ;
+void		print_nodes(t_tokenlist *head);//DELETE
 
 
 #endif

@@ -4,7 +4,7 @@ READLINE_PATH = $(shell brew --prefix readline)
 LDFLAGS = -L$(READLINE_PATH)/lib -lreadline -lncurses
 CPPFLAGS = -I$(READLINE_PATH)/include
 
-SRCS = main.c nodes.c creat_tree.c print_tree.c
+SRCS = main.c nodes.c creat_tree.c print_tree.c test_env.c
 OBJS = $(SRCS:.c=.o)
 
 # SRCS_B = 
