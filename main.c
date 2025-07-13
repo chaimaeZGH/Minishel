@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/08 20:17:25 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/13 06:27:28 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ int syntax_erreur(t_tokenlist *head)
 	return j;
 }
 
-void    merge_file_cmd(t_tokenlist **head) 
+void    merge_file_cmd(t_tokenlist **head)
 {
     t_tokenlist *current;
     t_tokenlist *next_node;
@@ -111,7 +111,7 @@ void    merge_file_cmd(t_tokenlist **head)
             (current->type == OUTredirection && ft_strncmp(current->content, ">",1) == 0) ||
             (current->type == HEREdocument && ft_strncmp(current->content, "<<",2) == 0) ||
             (current->type == OUTappend && ft_strncmp(current->content, ">>",2) == 0))
-        {
+        {       
             next_node = current->next;
             if (next_node) 
 			{
@@ -254,7 +254,7 @@ void merg_last_with_one(t_tokenlist **lst)
     prevvv = current->prev;
     if (!prevvv)
         return;
-    if (current->type==0 && prevvv->type==0)
+    if (current->type == 0 && prevvv->type == 0)
     {
         new_len = ft_strlen(current->content) + ft_strlen(prevvv->content) + 1;
         new_content = malloc(new_len);
@@ -335,7 +335,7 @@ int split_line(char *line, t_tokenlist **head)
         else
         {
             result = extract_cmd(line, i);
-            if (!result)
+            if (!result) 
                 return printf(RED"Memory allocation error\n"RESET), 1;
             ft_lstadd_backn(head, result->str);
             i = result->i;
@@ -437,7 +437,7 @@ int main(int argc, char **argv, char **envp)
     t_env   *env;
     (void)envp;
     (void)argv;
-        env = copy_env(envp);
+    env = copy_env(envp);
     if (argc != 1)
         return (printf(RED"invalid number of arguments\nUsage: ./minishell\n"RESET), 1);
 	while (1)
@@ -448,10 +448,12 @@ int main(int argc, char **argv, char **envp)
 		if (*s) 
 		    add_history(s);
         tree = init_shell(s);
+        // printf("");
+        // debug_tree(tree);
         if(execute(tree, &env) == 1)
         {
             free_tree(tree);
-            return (1);
+            // return (1);
         }
     }
 

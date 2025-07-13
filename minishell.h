@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/08 19:39:50 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/13 05:54:19 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@
 #include "./libft/libft.h"
 #include <string.h>
 #include <limits.h>
+#include <fcntl.h>
 
 typedef enum a_type_list
 {
@@ -132,7 +133,9 @@ int     exec_bin(char   **cmd, t_env    *env);
 int 	is_builtin(t_tree_list *tree);
 int 	execute(t_tree_list *tree, t_env    **env);
 int 	execute_builtins(t_tree_list *tree, t_env   **env, int flag);
-
-
+int 	execute_pipe(t_tree_list *tree, t_env   **env);
+int 	execute_out_redirection(t_tree_list *tree, char *fn, t_env **env);
+int		execute_in_redirection(t_tree_list *tree, char *fn, t_env **env);
+int execute_with_redirections(t_tree_list *tree, t_env **env);
 
 #endif
