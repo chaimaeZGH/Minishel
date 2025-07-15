@@ -51,8 +51,8 @@ int execute(t_tree_list *tree, t_env **env)
     {
         if (tree->cmd)
         {
-            if ((tree->cmd->out && tree->cmd->out->type == OUTredirection) || 
-                (tree->cmd->in && tree->cmd->in->type == INredirection))
+            if ((tree->cmd->out && (tree->cmd->out->type == OUTredirection || tree->cmd->out->type == OUTappend)) || 
+                (tree->cmd->in && tree->cmd->in->type == INredirection ))
                 ret = execute_with_redirections(tree, env);
             else
             {
