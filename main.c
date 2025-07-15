@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/13 00:21:34 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/15 23:38:45 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ void free_list(t_tokenlist *head)
 	}
 }
 
-
 void    ft_error_msg(int errnum)
 {
     if(errnum == 0)
@@ -75,16 +74,16 @@ int syntax_erreur(t_tokenlist *head)
 	current = head;
 	while (current != NULL)
 	{
-		if (current->type == comnd)
-		{
-            i = 0;
-			while (current->content[i] != '\0')
-			{
-				if (current->content[i] == ';' || current->content[i] == '\\')
-					return (ft_error_msg(0), ++j);
-				i++;
-			}
-		}
+		// if (current->type == comnd)
+		// {
+        //     i = 0;
+		// 	while (current->content[i] != '\0')
+		// 	{
+		// 		if (current->content[i] == ';' || current->content[i] == '\\')
+		// 			return (ft_error_msg(0), ++j);
+		// 		i++;
+		// 	}
+		// }
 		if(current->type != comnd && (current->next == NULL || current->next->type != comnd))
 			return (ft_error_msg(1), ++j);
 		if(current->type == PIPE && (current->prev == NULL || current->prev->type != comnd) )
@@ -419,6 +418,19 @@ void replace_quotes(t_tree_list *root)
     replace_quotes(root->left);
 }
 
+int check_quotes(char *str)
+{
+    int i;
+    
+    i = 0;
+    while(str[i] != '\0')
+    {
+        if(str[i] == 1 || str[i] == 2)
+            return (1);
+        i++;
+    }
+    return(0);
+}
 void check_for_expend(t_tree_list *root, char **env)
 {
 	t_tokenlist *current_arg;
@@ -438,8 +450,12 @@ void check_for_expend(t_tree_list *root, char **env)
 			current_arg = current_arg->next;
 		}
 		while (current_in)   
-        
 		{
+            if(current_in->type == HEREdocument)
+            {
+                if(check_quotes(current_in->content) == 1)
+                    current_in->expnd = false;
+            }
 			if(current_in->type != HEREdocument)
 				process_expend_content(current_in, env);
 			current_in = current_in->next;
@@ -452,6 +468,135 @@ void check_for_expend(t_tree_list *root, char **env)
 	}
 	check_for_expend(root->right, env);
 	check_for_expend(root->left, env);
+}
+
+void deleet_quots(t_tokenlist *str)
+{
+    char *new;
+    char *old = str->content;
+    int i=0;
+    int j=0;
+    while (old[i] != '\0')
+    {
+        if(old[i] != 1 && old[i] != 2)
+            j++;
+        i++;
+    }
+    
+    new = malloc(j+1);
+    if (!new) 
+        return;
+    i=0;
+    j=0;
+    while(old[i] != '\0')
+    {
+        if(old[i] != 1 && old[i] != 2)
+        {
+            new[j] = old[i];
+            j++;
+        }
+        i++;
+    }
+    new[j] = '\0';
+    free(str->content);
+    str->content = new;
+}
+
+void remove_quots(t_tree_list *root)
+{
+    t_tokenlist *current_arg;
+    t_tokenlist *current_in;
+    t_tokenlist *current_out;
+
+    if (!root) 
+        return;
+        
+    if(root->type == comnd && root->cmd)
+    {
+        if (root->cmd->args) {
+            current_arg = root->cmd->args;
+            while (current_arg) 
+            {
+                if (current_arg->content)
+                    deleet_quots(current_arg);
+                current_arg = current_arg->next;
+            }
+        }
+        
+        if (root->cmd->in) {
+            current_in = root->cmd->in;
+            while (current_in) 
+            {
+                if (current_in->content)
+                    deleet_quots(current_in);
+                current_in = current_in->next;
+            }
+        }
+        
+        if (root->cmd->out) {
+            current_out = root->cmd->out;
+            while (current_out) 
+            {
+                if (current_out->content)
+                    deleet_quots(current_out);
+                current_out = current_out->next;
+            }
+        }
+    }
+    remove_quots(root->right);
+    remove_quots(root->left);
+}
+
+void fill_cmd_from_args(t_cmdlist *cmd)
+{
+    if (!cmd || !cmd->args)
+    {
+        cmd->cmd = NULL;
+        return;
+    }
+    int count = 0;
+    t_tokenlist *current = cmd->args;
+    while (current)
+    {
+        count++;
+        current = current->next;
+    }
+    cmd->cmd = (char **)malloc(sizeof(char *)*(count + 1));
+    if (!cmd->cmd)
+        return;
+    current = cmd->args;
+    int i = 0;
+    while (current)
+    {
+        cmd->cmd[i] = strdup(current->content);
+        if (!cmd->cmd[i])
+        {
+            while (i > 0)
+                free(cmd->cmd[--i]);
+            free(cmd->cmd);
+            cmd->cmd = NULL;
+            return;
+        }
+        i++;
+        current = current->next;
+    }
+    cmd->cmd[count] = NULL;
+     int j = 0;
+    while(cmd->cmd[j]!=NULL)
+    {
+        printf("%s\n",cmd->cmd[j]);
+        j++;
+    }
+}
+
+void fill_double_point(t_tree_list *tree)
+{
+    if (!tree)
+        return;
+    if (tree->type == comnd)
+        fill_cmd_from_args(tree->cmd);
+    fill_double_point(tree->left);
+    fill_double_point(tree->right);
 }
 
 void    init_shell(char *s, char **env)
@@ -469,6 +614,9 @@ void    init_shell(char *s, char **env)
             tree = create_tree(&head);
             replace_quotes(tree);//
             check_for_expend(tree, env);
+            remove_quots(tree);
+            //chek empty node in args
+            fill_double_point(tree);
             print_ast_topdown(tree);
             // print_nodes(head);//
 	    }
@@ -479,12 +627,10 @@ void    init_shell(char *s, char **env)
         free_list(head);
     free(s);
     free_tree(tree);
-
 }
 
 int main(int argc, char **argv, char **envp)
 {
-    
 	char        *s;
     (void)argv;
     if (argc != 1)

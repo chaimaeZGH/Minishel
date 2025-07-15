@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/08 22:38:21 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/15 17:43:45 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ t_tokenlist *ft_lstnewnn(void *content, t_type_list ttype)
 	head->next = NULL;
 	head->prev = NULL;
 	head->type = ttype;
+    head->expnd = true;
 	return head;
 }
 

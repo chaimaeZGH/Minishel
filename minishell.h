@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/13 00:29:15 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/15 16:10:15 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@
 
 # include <unistd.h>
 # include <stdlib.h>
-# include <stdio.h> 
+# include <stdio.h>
+#include <stdbool.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "./libft/libft.h"
@@ -51,12 +52,12 @@ typedef enum a_type_list
 
 typedef struct s_tokenlist
 {
-	char			*content;
-	struct s_tokenlist      	*prev;
-	struct s_tokenlist      	*next;
-	t_type_list		type;
-}	                t_tokenlist;
-
+	char				*content;
+	struct s_tokenlist	*prev;
+	struct s_tokenlist	*next;
+	bool				expnd;
+	t_type_list			type;
+}						t_tokenlist;
 
 typedef struct s_check
 {
@@ -71,7 +72,7 @@ typedef struct s_cmdlist
     t_tokenlist	*args;
     t_tokenlist	*out;
     t_tokenlist	*in;
-}			t_cmdlist;
+}				t_cmdlist;
 
 typedef struct s_tree_list
 {
@@ -82,7 +83,6 @@ typedef struct s_tree_list
 }						t_tree_list;
 
 void		print_ast_topdown(t_tree_list *root);//DELEET
-
 t_tree_list *create_tree(t_tokenlist **head);
 t_tokenlist *ft_lstnewn(void *content);
 t_tokenlist *ft_lstlastn(t_tokenlist *lst);
@@ -91,6 +91,5 @@ void		free_list(t_tokenlist *head);
 void		free_tree(t_tree_list *tree);
 void		process_expend_content(t_tokenlist *token, char **env) ;
 void		print_nodes(t_tokenlist *head);//DELETE
-
 
 #endif
