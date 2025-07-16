@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/15 23:38:45 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/16 12:06:14 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,36 +302,35 @@ int split_line(char *line, t_tokenlist **head)
     t_check *result;
     int     i;
     int     j;
-    char *ll;
-    
+    char    *ll;
+
     ll = NULL;
     i = 0;
     while (line[i] != '\0')
     {
         skip_whitespaces(&i, line);
         if (line[i] == '\0')
-                 ;
+            break ;
         if (line[i] == '\'' || line[i] == '\"')
         {
             j = i;
-             result = extract_cmd_quat(line, i, line[i]);
+            result = extract_cmd_quat(line, i, line[i]);
             if (!result)
                 return printf(RED"Syntax error: unclosed quotes\n"RESET), 1;
             ft_lstadd_backn(head, result->str);
             i = result->i;
-            
             free(result);
-            if(line[j-1] != ' ' && j > 0)
+            if(j > 0 && line[j-1] != ' ')
                 merg_last_with_one(head);
             if(line[i] != ' ' && line[i] != '\0')
-                ll = ft_lstlastn(*head)->content;
+                ll = (ft_lstlastn(*head))->content;
         }
         else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
             handle_operators(&i, line, head);
         else
         {
             result = extract_cmd(line, i);
-            if (!result)
+            if (!result) 
                 return printf(RED"Memory allocation error\n"RESET), 1;
             ft_lstadd_backn(head, result->str);
             i = result->i;
@@ -581,12 +580,6 @@ void fill_cmd_from_args(t_cmdlist *cmd)
         current = current->next;
     }
     cmd->cmd[count] = NULL;
-     int j = 0;
-    while(cmd->cmd[j]!=NULL)
-    {
-        printf("%s\n",cmd->cmd[j]);
-        j++;
-    }
 }
 
 void fill_double_point(t_tree_list *tree)
@@ -597,6 +590,29 @@ void fill_double_point(t_tree_list *tree)
         fill_cmd_from_args(tree->cmd);
     fill_double_point(tree->left);
     fill_double_point(tree->right);
+}
+void check_empty_node(t_tree_list *tree)
+{
+    if (!tree)
+        return;
+    t_tree_list *brnch = tree;
+    while (brnch->right != NULL)
+        brnch = brnch->right;
+    if (!brnch->cmd || !brnch->cmd->args)
+        return;
+    t_tokenlist *dell = brnch->cmd->args;
+    while (dell->next != NULL)
+        dell = dell->next;
+
+    if (ft_strlen(dell->content) == 0)
+    {
+        if (dell->prev)
+            dell->prev->next = NULL;
+        else
+            brnch->cmd->args = NULL;
+        free(dell->content);
+        free(dell);
+    }
 }
 
 void    init_shell(char *s, char **env)
@@ -615,7 +631,7 @@ void    init_shell(char *s, char **env)
             replace_quotes(tree);//
             check_for_expend(tree, env);
             remove_quots(tree);
-            //chek empty node in args
+            check_empty_node(tree);
             fill_double_point(tree);
             print_ast_topdown(tree);
             // print_nodes(head);//

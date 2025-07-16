@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/15 19:54:26 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/16 12:05:25 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ char *expand_variable(const char *str, int *index, char **env)
 
 	start = *index + 1;
 	i = start;
-	if(ft_strncmp("$0", (char *)str, 2) == 0)
+	if(str[start] == '0')
 	{
 		(*index)++;
 		return (ft_strdup("minishell"));
