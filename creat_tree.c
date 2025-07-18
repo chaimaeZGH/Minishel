@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/11 19:26:06 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/17 00:31:07 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ t_tree_list *create_tree(t_tokenlist **head)
         tree->right = NULL;
         tree->left = NULL;
         tree->type = comnd;
-        tree->cmd->here_doc_fd=-1;
+        // tree->cmd->here_doc_fd=-1;
         tree->cmd->cmd = NULL;
         tree->cmd->args = NULL;
         tree->cmd->in = NULL;

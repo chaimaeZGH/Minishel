@@ -1,73 +1,78 @@
 #include "../minishell.h"
 
-// int execute_out_redirection(t_tree_list *tree, char *fn, t_env **env)
-// {
-//     int fd;
-//     int tmp2;
-//     int ret;
+char    *generate_filename(int  file)
+{
+    char     *nbr;
+    char    *str;
 
-//     fd = open (fn, O_CREAT | O_WRONLY | O_TRUNC , 0644);
-//     // if (fd == -1)
-//     // handle error
-//     tmp2 = dup(1);
-//     dup2(fd, STDOUT_FILENO);
-//     close(fd);
-//     ret = is_builtin(tree);
-//     if (ret != -1)
-//         ret = execute_builtins(tree, env, ret);
-//     else
-//     {
-//         ret = exec_bin(tree->cmd->cmd, *env);
-//     }
-//     dup2(tmp2, STDOUT_FILENO);
-//     // dup2(tmp1, STDIN_FILENO);
-//     return(ret);
-// }
+    nbr = ft_itoa(file);
+    str = ft_strjoin("/tmp/heredoc_",nbr);
+    return (str);
+}
 
-// int execute_in_redirection(t_tree_list *tree, char *fn, t_env **env)
-// {
-//     int fd;
-//     int tmp;
-//     int ret;
+int heredoc_redir(t_tokenlist  *curr)
+{
+    static int  file;
+    char    *file_name;
+    pid_t   pid;
+    char    *line;
+    int     fd;
+    int     status;
 
-//     fd = open (fn , O_RDONLY , 0644);
-//     tmp = dup(0);
-//     dup2(fd, STDIN_FILENO);
-//     close(fd);
-//      ret = is_builtin(tree);
-//     if (ret != -1)
-//         ret = execute_builtins(tree, env, ret);
-//     else
-//     {
-//         ret = exec_bin(tree->cmd->cmd, *env);
-//     }
-//     dup2(tmp, STDIN_FILENO);
-//     // dup2(tmp1, STDIN_FILENO);
-//     return(ret);
-// }
-
-// int in_redir(char *fn, int *s_stdin)
-// {
-//     int fd;
-
-//     *s_stdin = dup(0);
-//     if (*s_stdin == -1)
-//         return (-1);
-//     fd = open(fn , O_RDONLY);
-//     if (fd == -1)
-//     {
-//         perror("open in ");
-//         return (-1);
-//     }
-//     dup2(fd, 0);
-//     close(fd);
-//     return (0);
-// }
+    // if (curr->heredoc_prepared == 1)
+        // return (0);/
+    curr->fd = file;
+    file_name = generate_filename(file++);
+    pid = fork();
+    if (pid == 0)
+    {
+        fd = open (file_name, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+        if (fd == -1)
+        {
+            perror("failed heredoc open");
+            exit(1);
+        }
+        while (1)
+        {
+            line = readline("> ");
+            if (!line || ft_strcmp(line, curr->content) == 0)
+                break;
+            write(fd, line, ft_strlen(line));
+            write(fd, "\n", 1);
+            free(line);
+        }
+        free(line);
+        close(fd);
+        free(file_name);
+        exit(0);
+    }
+    else
+    {
+        waitpid(pid, &status, 0);
+        if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+            return (-1);
+        // if (curr->next == NULL)
+        // {
+        //     file_name = generate_filename(file -1);
+        //     fd = open (file_name, O_RDONLY);
+        //     if (fd == -1)
+        //     {
+        //         perror("failed heredoc openn");
+        //         return (-1);
+        //     }
+        //     dup2(fd, 0);
+        //     close(fd);
+            free(file_name);
+        // }
+    }
+    return (0);
+}
 
 int in_redir(t_tokenlist    *in, int    *s_stdin)
 {
     t_tokenlist *curr;
     int fd;
+    char    *file_name;
 
     *s_stdin = dup(0);
     if (*s_stdin == -1)
@@ -80,35 +85,36 @@ int in_redir(t_tokenlist    *in, int    *s_stdin)
             fd =  open (in->content, O_RDONLY);
             if (fd == -1)
             {
-                perror("open in ");
+                perror("open in");
                 return (-1);
             }
             if (curr->next == NULL)
                 dup2(fd, 0);
             close(fd);
         }
+        if (curr->type == HEREdocument)
+        {
+            printf("%d\n\n", curr->fd);
+            file_name = generate_filename(curr->fd);
+            fd = open (file_name, O_RDONLY);
+            free(file_name);
+            if (fd == -1)
+            {
+                perror("heredoc");
+                return (-1);
+            }
+            if (curr->next == NULL)
+              {
+                printf("YOU DUPPED THE FILE\n\n");
+               dup2(fd, 0);
+              }
+                
+            close(fd);
+        }
         curr = curr->next;
     }
     return (0);
 }
-
-// int out_redir(t_tokenlist   *out, int *s_stdout)
-// {
-//     int fd;
-
-//     *s_stdout = dup(1);
-//     if (*s_stdout == -1)
-//         return (-1);
-//     fd = open(fn , O_CREAT | O_WRONLY | O_TRUNC, 0644);
-//     if (fd == -1)
-//     {
-//         perror("open out ");
-//         return (-1);
-//     }
-//     dup2(fd, 1);
-//     close(fd);
-//     return (0);
-// }
 
 int out_redir(t_tokenlist *out, int *s_stdout)
 {
@@ -144,13 +150,16 @@ int execute_with_redirections(t_tree_list *tree, t_env **env)
     int s_stdout = -1;
     int ret;
 
-    if (tree->cmd->in && (tree->cmd->in->type == INredirection || tree->cmd->in->type == OUTappend))
+    if (tree->cmd->in)
     {
-       ret = in_redir(tree->cmd->in, &s_stdin);
-       if (ret == -1)
-        return (ret);
+        if(tree->cmd->in->type == INredirection || tree->cmd->in->type == HEREdocument)
+        {
+            ret = in_redir(tree->cmd->in, &s_stdin);
+            if (ret == -1)
+                return (ret);
+        }
     }
-    if (tree->cmd->out && tree->cmd->out->type == OUTredirection)
+    if (tree->cmd->out && (tree->cmd->out->type == OUTredirection || tree->cmd->out->type == OUTappend))
     {
         ret = out_redir(tree->cmd->out, &s_stdout);
         if (ret == -1)

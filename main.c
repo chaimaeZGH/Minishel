@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/13 06:27:28 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/18 18:20:59 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -450,6 +450,8 @@ int main(int argc, char **argv, char **envp)
         tree = init_shell(s);
         // printf("");
         // debug_tree(tree);
+        if (prepare_heredoc(tree) == -1)
+            return (-1);
         if(execute(tree, &env) == 1)
         {
             free_tree(tree);

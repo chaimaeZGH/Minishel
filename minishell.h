@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/13 05:54:19 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/18 18:20:33 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@
 #include <limits.h>
 #include <fcntl.h>
 
+
 typedef enum a_type_list
 {
 	comnd,
@@ -54,10 +55,12 @@ typedef enum a_type_list
 
 typedef struct s_tokenlist
 {
-	char			*content;
+	char						*content;
 	struct s_tokenlist      	*prev;
 	struct s_tokenlist      	*next;
-	t_type_list		type;
+	t_type_list					type;
+	int							fd;
+	int							heredoc_prepared;
 }	                t_tokenlist;
 
 
@@ -69,7 +72,7 @@ typedef struct s_check
 
 typedef struct s_cmdlist
 {
-	int			here_doc_fd;
+ 
     char		**cmd;
     t_tokenlist	*args;
     t_tokenlist	*out;
@@ -136,6 +139,10 @@ int 	execute_builtins(t_tree_list *tree, t_env   **env, int flag);
 int 	execute_pipe(t_tree_list *tree, t_env   **env);
 int 	execute_out_redirection(t_tree_list *tree, char *fn, t_env **env);
 int		execute_in_redirection(t_tree_list *tree, char *fn, t_env **env);
-int execute_with_redirections(t_tree_list *tree, t_env **env);
+int 	execute_with_redirections(t_tree_list *tree, t_env **env);
+int 	ft_strcmp(const char *s1, const char *s2);
+int 	heredoc_redir(t_tokenlist  *curr);
+char    *generate_filename(int  file);
+int		prepare_heredoc(t_tree_list *tree);
 
 #endif
