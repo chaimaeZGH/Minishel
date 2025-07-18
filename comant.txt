@@ -74,3 +74,7 @@ if we start with '$' thats must not be expend for no reason it gets as character
 befor expend you should deleet quotes exept if thr are $ sign in the content
 
 check if " (double couat) is ther the first befor '(single couat) then expend no mater what is inside befor closinf that quote 
+
+
+
+-->> expand in heardock is depend on the heardock name if its coted or not

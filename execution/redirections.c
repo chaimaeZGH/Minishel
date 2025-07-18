@@ -10,7 +10,7 @@ char    *generate_filename(int  file)
     return (str);
 }
 
-int heredoc_redir(t_tokenlist  *curr)
+int heredoc_redir(t_tokenlist  *curr, char  **env)
 {
     static int  file;
     char    *file_name;
@@ -32,11 +32,14 @@ int heredoc_redir(t_tokenlist  *curr)
             perror("failed heredoc open");
             exit(1);
         }
+        printf("this is the delimiter!: %s\n", curr->content);
         while (1)
         {
             line = readline("> ");
             if (!line || ft_strcmp(line, curr->content) == 0)
                 break;
+            if (curr->expnd == true)
+                line = expand_content(line, env);
             write(fd, line, ft_strlen(line));
             write(fd, "\n", 1);
             free(line);
@@ -51,19 +54,7 @@ int heredoc_redir(t_tokenlist  *curr)
         waitpid(pid, &status, 0);
         if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
             return (-1);
-        // if (curr->next == NULL)
-        // {
-        //     file_name = generate_filename(file -1);
-        //     fd = open (file_name, O_RDONLY);
-        //     if (fd == -1)
-        //     {
-        //         perror("failed heredoc openn");
-        //         return (-1);
-        //     }
-        //     dup2(fd, 0);
-        //     close(fd);
             free(file_name);
-        // }
     }
     return (0);
 }
@@ -94,7 +85,6 @@ int in_redir(t_tokenlist    *in, int    *s_stdin)
         }
         if (curr->type == HEREdocument)
         {
-            printf("%d\n\n", curr->fd);
             file_name = generate_filename(curr->fd);
             fd = open (file_name, O_RDONLY);
             free(file_name);
@@ -105,7 +95,6 @@ int in_redir(t_tokenlist    *in, int    *s_stdin)
             }
             if (curr->next == NULL)
               {
-                printf("YOU DUPPED THE FILE\n\n");
                dup2(fd, 0);
               }
                 

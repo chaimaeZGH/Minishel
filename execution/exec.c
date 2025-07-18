@@ -44,11 +44,10 @@
 // }
 
 
-int prepare_heredoc(t_tree_list *tree)
+int prepare_heredoc(t_tree_list *tree, char **env)
 {
     t_tokenlist *curr;
 
-    // tree->cmd->in->heredoc_prepared = 0;
     if (tree->type == comnd && tree->cmd && tree->cmd->in)
     {
         curr = tree->cmd->in;
@@ -56,7 +55,7 @@ int prepare_heredoc(t_tree_list *tree)
         {
             if (curr->type == HEREdocument)
             {
-                if (heredoc_redir(curr) == -1)
+                if (heredoc_redir(curr, env) == -1)
                     return (-1);
             }
             curr = curr->next;
@@ -64,12 +63,11 @@ int prepare_heredoc(t_tree_list *tree)
     }
     if (tree->type == PIPE)
     {
-        if (prepare_heredoc(tree->left) == -1)
+        if (prepare_heredoc(tree->left, env) == -1)
             return (-1);
-        if (prepare_heredoc(tree->right) == -1)
+        if (prepare_heredoc(tree->right, env) == -1)
             return (-1);
     }
-    // curr->heredoc_prepared = 1;
     return (0);
 }
 
