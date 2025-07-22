@@ -74,9 +74,7 @@ int prepare_heredoc(t_tree_list *tree, char **env)
 int execute(t_tree_list *tree, t_env **env)
 {
     int ret = 0;
-    
-    // if (prepare_heredoc(tree) == -1)
-    //     return (-1);
+
     if (tree->type == comnd)
     {
         if (tree->cmd)

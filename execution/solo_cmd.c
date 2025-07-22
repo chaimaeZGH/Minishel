@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 12:40:48 by rroundi           #+#    #+#             */
-/*   Updated: 2025/07/11 18:43:16 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/22 20:16:12 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,11 @@ int     exec_bin(char   **cmd, t_env    *env)
         return(ret);
     path = true_path(cmd[0], env);
     if (!path)
-        return (ret);
+    {
+        fprintf(stderr, "%s :command not found\n", cmd[0]);
+        env->exit_s = 127;
+        return (127);        
+    }
     pid = fork();
     if (pid == -1)
     {
@@ -37,12 +41,11 @@ int     exec_bin(char   **cmd, t_env    *env)
     }
     if (pid == 0)
     {
-        execve(path, cmd, e_arr);
-        //need to check all cases of execve like (command not found) or (command found but not executable) or (generic code) 
-        perror("execve failed");
+        execve(path, cmd, e_arr); 
+        env->exit_s = handle_exec(cmd);
         free_arr(e_arr);
         free(path);
-        exit(1);
+        exit(env->exit_s);
     }
     if (waitpid(pid, &status, 0) == -1)
     {
@@ -58,6 +61,7 @@ int     exec_bin(char   **cmd, t_env    *env)
         ret = WTERMSIG(status);
         ret = ret + 128;
     }
+    env->exit_s = ret;
     free_arr(e_arr);
     free(path);
     return (ret);

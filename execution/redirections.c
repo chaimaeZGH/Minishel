@@ -32,7 +32,7 @@ int heredoc_redir(t_tokenlist  *curr, char  **env)
             perror("failed heredoc open");
             exit(1);
         }
-        printf("this is the delimiter!: %s\n", curr->content);
+        // printf("this is the delimiter!: %s\n", rr->content);
         while (1)
         {
             line = readline("> ");
@@ -111,7 +111,7 @@ int out_redir(t_tokenlist *out, int *s_stdout)
     t_tokenlist *curr;
 
     curr = out;
-    *s_stdout = dup(0);
+    *s_stdout = dup(1);
     if (*s_stdout == -1)
         return (-1);
     while (curr)
@@ -145,20 +145,27 @@ int execute_with_redirections(t_tree_list *tree, t_env **env)
         {
             ret = in_redir(tree->cmd->in, &s_stdin);
             if (ret == -1)
+            {
+                (*env)->exit_s = 1;
                 return (ret);
+            }
         }
     }
     if (tree->cmd->out && (tree->cmd->out->type == OUTredirection || tree->cmd->out->type == OUTappend))
     {
         ret = out_redir(tree->cmd->out, &s_stdout);
         if (ret == -1)
+        {
+            (*env)->exit_s = 1;
             return (ret);
+        }
     }
     ret = is_builtin(tree);
     if (ret != -1)
         ret = execute_builtins(tree, env, ret);
     else
         ret = exec_bin(tree->cmd->cmd, *env);
+    (*env)->exit_s = ret;
     if (s_stdin != -1)
     {
         dup2(s_stdin, STDIN_FILENO);
@@ -169,5 +176,5 @@ int execute_with_redirections(t_tree_list *tree, t_env **env)
         dup2(s_stdout, STDOUT_FILENO);
         close(s_stdout);
     }
-    return ret;
+    return (ret);
 }

@@ -5,15 +5,23 @@ int execute_pipe(t_tree_list *tree, t_env   **env)
     int fd[2];
     pid_t pid1;
     pid_t pid2;
+    int   status1;
+    int   status2; 
     int   ret;
 
-    pipe(fd);
     ret = 0;
+    if (pipe(fd))
+    {
+        perror("pipe failed");
+        return (1);
+    }
     pid1 = fork();
     if (pid1 == -1)
     {
-        //add error handling
-        return (ret);
+        perror("fork failed");
+        close(fd[0]);
+        close(fd[1]);
+        return (1);
     }
     if (pid1 == 0)
     {
@@ -26,8 +34,11 @@ int execute_pipe(t_tree_list *tree, t_env   **env)
     pid2 = fork();
     if (pid2 == -1)
     {
-        //add error handling
-        return (ret);
+        perror("fork failed");
+        close(fd[0]);
+        close(fd[1]);
+        kill(pid1, SIGTERM);
+        return (1);;
     }
     if (pid2 == 0)
     {
@@ -39,8 +50,13 @@ int execute_pipe(t_tree_list *tree, t_env   **env)
     }
     close(fd[0]);
     close(fd[1]);
-    wait(NULL);
-    wait(NULL);
+    waitpid(pid1, &status1, 0);
+    waitpid(pid2, &status2, 0);
+    if (WIFEXITED(status2))
+        ret = WEXITSTATUS(status2);
+    if (WIFSIGNALED(status2))
+        ret = WTERMSIG(status2) + 128;
+    (*env)->exit_s = ret;
     return (ret);
 }
 

@@ -5,9 +5,12 @@ t_env   *create_node(char    *key, char  *value)
     t_env   *new_node;
 
     new_node = malloc(sizeof(t_env));
-    new_node->key = ft_strdup(key);
+    if (key)
+        new_node->key = ft_strdup(key);
     if (value)
         new_node->value = ft_strdup(value);
+    else
+        new_node->value = NULL;
     new_node->next = NULL;
     return (new_node);
 }

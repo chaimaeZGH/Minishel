@@ -50,5 +50,6 @@ int execute_builtins(t_tree_list *tree, t_env   **env, int flag)
         ret = ft_pwd();
     else if (flag == 7)
         ret = ft_unset(env, tree->cmd->cmd);
+    (*env)->exit_s = ret;
     return (ret);
 }

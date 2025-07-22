@@ -637,6 +637,7 @@ int main(int argc, char **argv, char **envp)
 {
     
 	char        *s;
+	int			ret;
     t_tree_list *tree;
     t_env   *env;
     (void)envp;
@@ -644,9 +645,20 @@ int main(int argc, char **argv, char **envp)
     env = copy_env(envp);
     if (argc != 1)
         return (printf(RED"invalid number of arguments\nUsage: ./minishell\n"RESET), 1);
+	env->exit_s = 0;
 	while (1)
 	{
-		s = readline(GREEN"minishell> "RESET);
+		if (isatty(fileno(stdin)))
+			s = readline(GREEN"minishell> "RESET);
+	else
+	{
+    	char buffer[1024];
+    	int bytes_read = read(fileno(stdin), buffer, sizeof(buffer) - 1);
+   		if (bytes_read <= 0)
+      	  break;
+    	buffer[bytes_read] = '\0';
+    	s = ft_strtrim(buffer, "\n");
+	}
 		if (!s)
 			break;
 		if (*s) 
@@ -656,13 +668,17 @@ int main(int argc, char **argv, char **envp)
         // debug_tree(tree);
         if (prepare_heredoc(tree, envp) == -1)
             return (-1);
-        if(execute(tree, &env) == 1)
-        {
-            free_tree(tree);
-            // return (1);
-		}
+        // if(execute(tree, &env) == 1)
+        // {
+        //     free_tree(tree);
+        //     // return (1);
+		// }
+		ret = execute(tree, &env);
+		printf("\n%d\n", ret);
+		printf("\n%d\n", env->exit_s);
+
     }
 
     free_tree(tree);
-    return (0);
+    return (ret);
 }

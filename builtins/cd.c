@@ -38,7 +38,7 @@ int ft_cd(t_env **c_env, char **av)
         if (!envv || !envv->value)
         {
             print_error("cd", "HOME NOT SET");
-            return (-1);
+            return (1);
         }
         cwd = envv->value;
         if (chdir(cwd) != 0)//chdit(path);
@@ -52,7 +52,7 @@ int ft_cd(t_env **c_env, char **av)
         else
         {
             perror(av[1]);
-            return (-1);
+            return (1);
         }
     }
     return (0);

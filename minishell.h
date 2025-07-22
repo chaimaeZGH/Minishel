@@ -1,5 +1,5 @@
 
-#ifndef MINISHELL_H
+# ifndef MINISHELL_H
 # define MINISHELL_H
 
 #define RESET   "\033[0m"
@@ -35,6 +35,8 @@
 #include <string.h>
 #include <limits.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <signal.h>
 
 
 typedef enum a_type_list
@@ -98,6 +100,7 @@ typedef struct s_env{
     char *key;
     char *value;
     struct s_env *next;
+	int		exit_s;
 }t_env;
 
 //builtins
@@ -138,5 +141,6 @@ int 	heredoc_redir(t_tokenlist  *curr, char	**env);
 char    *generate_filename(int  file);
 int		prepare_heredoc(t_tree_list *tree, char **env);
 char 	*expand_content(const char *content, char **env);
+int    handle_exec(char    **cmd);
 
 #endif
