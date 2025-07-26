@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/15 16:10:15 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/26 22:09:27 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,13 @@
 #define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
-
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdio.h>
-#include <stdbool.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include "./libft/libft.h"
+# include <stdbool.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include "./libft/libft.h"
 
 typedef enum a_type_list
 {
@@ -65,13 +64,19 @@ typedef struct s_check
 	t_tokenlist	*str;
 }				t_check;
 
+typedef struct s_expend
+{
+	int		i;
+	char	*str;
+}				t_expend;
+
 typedef struct s_cmdlist
 {
 	int			here_doc_fd;
-    char		**cmd;
-    t_tokenlist	*args;
-    t_tokenlist	*out;
-    t_tokenlist	*in;
+	char		**cmd;
+	t_tokenlist	*args;
+	t_tokenlist	*out;
+	t_tokenlist	*in;
 }				t_cmdlist;
 
 typedef struct s_tree_list
@@ -83,13 +88,14 @@ typedef struct s_tree_list
 }						t_tree_list;
 
 void		print_ast_topdown(t_tree_list *root);//DELEET
-t_tree_list *create_tree(t_tokenlist **head);
-t_tokenlist *ft_lstnewn(void *content);
-t_tokenlist *ft_lstlastn(t_tokenlist *lst);
+t_tree_list	*create_tree(t_tokenlist **head);
+t_tokenlist	*ft_lstnewn(void *content);
+t_tokenlist	*ft_lstlastn(t_tokenlist *lst);
 void		ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new);
 void		free_list(t_tokenlist *head);
 void		free_tree(t_tree_list *tree);
-void		process_expend_content(t_tokenlist *token, char **env) ;
+void		process_expend_content(t_tokenlist *token, char **env);
 void		print_nodes(t_tokenlist *head);//DELETE
+void	free_node(t_tokenlist *node);
 
 #endif

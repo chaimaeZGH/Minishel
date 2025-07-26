@@ -6,17 +6,19 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/16 12:14:30 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/25 08:18:19 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void free_cmd(char **cmd)
+void	free_cmd(char **cmd)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	if (!cmd)
-		return;
+		return ;
 	while (cmd[i] != NULL)
 	{
 		free(cmd[i]);
@@ -25,21 +27,22 @@ void free_cmd(char **cmd)
 	free(cmd);
 }
 
-void free_s_cmd(t_cmdlist *cmd)
+void	free_s_cmd(t_cmdlist *cmd)
 {
 	if (!cmd)
-		return;
+		return ;
 	free_list(cmd->args);
 	free_list(cmd->in);
 	free_list(cmd->out);
 	free_cmd(cmd->cmd);
 	free(cmd);
 }
-void free_tree(t_tree_list *tree)
+
+void	free_tree(t_tree_list *tree)
 {
 	if (!tree)
-		return;
-	if(tree->type != PIPE)
+		return ;
+	if (tree->type != PIPE)
 		free_s_cmd(tree->cmd);
 	free_tree(tree->right);
 	free_tree(tree->left);
@@ -51,13 +54,13 @@ t_tokenlist	*last_pipe(t_tokenlist *head)
 	t_tokenlist	*current;
 
 	if (!head)
-		return NULL;
+		return (NULL);
 	current = head;
 	while (current->next != NULL)
 		current = current->next;
-	while(current != NULL)
+	while (current != NULL)
 	{
-		if(current->type == PIPE)
+		if (current->type == PIPE)
 			return (current);
 		else
 			current = current->prev;
@@ -71,7 +74,7 @@ t_tokenlist	*ft_lstnewnn(void *content, t_type_list ttype)
 
 	head = malloc(sizeof(t_tokenlist));
 	if (head == NULL)
-		return NULL;
+		return (NULL);
 	head->content = content;
 	head->next = NULL;
 	head->prev = NULL;
@@ -87,74 +90,89 @@ void	fill_tree(t_cmdlist *cmd, t_tokenlist *original)
 	if (original == NULL)
 		return ;
 	head = original;
-	while(head != NULL)
+	while (head != NULL)
 	{
 		if (head->type == comnd)
-			ft_lstadd_backn(&cmd->args, ft_lstnewnn(ft_strdup(head->content),head->type));
+			ft_lstadd_backn(&cmd->args, 
+				ft_lstnewnn(ft_strdup(head->content), head->type));
 		if (head->type == INredirection || head->type == HEREdocument)
-			ft_lstadd_backn(&cmd->in, ft_lstnewnn(ft_strdup(head->content),head->type));
+			ft_lstadd_backn(&cmd->in, 
+				ft_lstnewnn(ft_strdup(head->content), head->type));
 		if (head->type == OUTappend || head->type == OUTredirection)
-			ft_lstadd_backn(&cmd->out, ft_lstnewnn(ft_strdup(head->content),head->type));
+			ft_lstadd_backn(&cmd->out, 
+				ft_lstnewnn(ft_strdup(head->content), head->type));
 		head = head->next;
 	}
 }
 
-t_tree_list *create_tree(t_tokenlist **head)
+t_tree_list	*create_tree_node(void)
 {
-	t_tree_list *tree;
-	t_tokenlist *last_p;
+	t_tree_list	*tree;
 
-	if (head == NULL || *head == NULL)
-		return NULL;
-
-	// create_tree_node()
 	tree = malloc(sizeof(t_tree_list));
 	if (!tree)
-		return NULL;
-	
+		return (NULL);
 	tree->right = NULL;
 	tree->left = NULL;
 	tree->cmd = NULL;
-	//
+	return (tree);
+}
 
+t_cmdlist	*create_cmd_node(t_tree_list *tree)
+{
+	tree->cmd = malloc(sizeof(t_cmdlist));
+	if (!tree->cmd)
+	{
+		free(tree);
+		return (NULL);
+	}
+	tree->cmd->here_doc_fd = -1;
+	tree->cmd->cmd = NULL;
+	tree->cmd->args = NULL;
+	tree->cmd->in = NULL;
+	tree->cmd->out = NULL;
+	return (tree->cmd);
+}
+
+void	remove_node(t_tokenlist *last_p, t_tree_list *tree, t_tokenlist **head);
+
+t_tree_list	*create_tree(t_tokenlist **head)
+{
+	t_tree_list	*tree;
+	t_tokenlist	*last_p;
+
+	if (head == NULL || *head == NULL)
+		return (NULL);
+	tree = create_tree_node();
+	if (!tree)
+		return (NULL);
 	last_p = last_pipe(*head);
 	if (last_p == NULL)
 	{
-		// create_cmd_node()
-		tree->cmd = malloc(sizeof(t_cmdlist));
+		tree->cmd = create_cmd_node(tree);
 		if (!tree->cmd)
-		{
-			free(tree);
-			return NULL;
-		}
-		tree->cmd->here_doc_fd=-1;
-		tree->cmd->cmd = NULL;
-		tree->cmd->args = NULL;
-		tree->cmd->in = NULL;
-		tree->cmd->out = NULL;
-		//
-
+			return (NULL);
 		tree->type = comnd;
 		fill_tree(tree->cmd, *head);
-		free_list(*head);  
+		free_list(*head);
 	}
 	else
-	{
-		//remove_node();
-		t_tokenlist *previous;
-		t_tokenlist *right_part;
+		remove_node(last_p, tree, head);
+	return (tree);
+}
 
-		previous = last_p->prev;
-		previous->next = NULL;
-		right_part = last_p->next;
-		right_part->prev = NULL;
-		free(last_p->content);
-		free(last_p);
-		// 
+void	remove_node(t_tokenlist *last_p, t_tree_list *tree, t_tokenlist **head)
+{
+	t_tokenlist	*previous;
+	t_tokenlist	*right_part;
 
-		tree->type = PIPE;
-		tree->right = create_tree(&right_part);
-		tree->left = create_tree(head);
-	}
-	return tree;
+	previous = last_p->prev;
+	previous->next = NULL;
+	right_part = last_p->next;
+	right_part->prev = NULL;
+	free(last_p->content);
+	free(last_p);
+	tree->type = PIPE;
+	tree->right = create_tree(&right_part);
+	tree->left = create_tree(head);
 }

@@ -6,30 +6,14 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/15 17:44:10 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/25 08:24:36 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_tokenlist *ft_lstnewn(void *content)
+void	popul_list(t_tokenlist *head, void *content)
 {
-	t_tokenlist *head;
-
-	head = malloc(sizeof(t_tokenlist));
-	if (head == NULL)
-		return NULL;
-		
-	head->content = content;
-	head->next = NULL;
-	head->prev = NULL;
-	head->expnd = true;
-	if (content == NULL) 
-	{
-		head->type = comnd;
-		return head;
-	}
-	
 	if (ft_strncmp("|", (char *)content, 1) == 0)
 		head->type = PIPE;
 	else if (ft_strncmp("<<", (char *)content, 2) == 0)
@@ -46,8 +30,26 @@ t_tokenlist *ft_lstnewn(void *content)
 		head->type = comnd;
 	else
 		head->type = comnd;
-		
-	return head;
+}
+
+t_tokenlist	*ft_lstnewn(void *content)
+{
+	t_tokenlist	*head;
+
+	head = malloc(sizeof(t_tokenlist));
+	if (head == NULL)
+		return (NULL);
+	head->content = content;
+	head->next = NULL;
+	head->prev = NULL;
+	head->expnd = true;
+	if (content == NULL)
+	{
+		head->type = comnd;
+		return (head);
+	}
+	popul_list(head, content);
+	return (head);
 }
 
 t_tokenlist	*ft_lstlastn(t_tokenlist *lst)
