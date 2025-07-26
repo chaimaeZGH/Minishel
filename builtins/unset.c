@@ -29,8 +29,10 @@ int ft_unset(t_env  **env, char **av)
 
     i = 1;
     ret = 0;
+    // printf("\nn++%s++\n", av[i]);
     while (av[i])
     {
+        // printf("\n\nrah dkhel\n\n");
         if (!if_valid(av[i]) || ft_strchr(av[i], '=') != NULL)
         {
             error_msg("unset", "not a valid identifier", av[i]);

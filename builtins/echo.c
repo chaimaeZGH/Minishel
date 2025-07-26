@@ -32,8 +32,11 @@ int ft_echo(char    **av)
     while (av[i])
     {
         printf("%s", av[i]);
+        if (av[i + 1])
+            printf(" ");
         i++;
     }
+    // printf("%s\n", av[1]);
     if (flag == 1)
         printf("\n");
     return (0);

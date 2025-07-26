@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:33:22 by rroundi           #+#    #+#             */
-/*   Updated: 2025/07/08 19:42:53 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/26 19:56:35 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int if_valid(char *av)
     i = 0;
     if (ft_isalpha(av[i]) == 0 && av[i] != '_')
         return (0);
+        // printf("\nwsel hna \n\n");
     i++;
     while (av[i] && av[i] != '=')
     {

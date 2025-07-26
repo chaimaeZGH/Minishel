@@ -41,7 +41,7 @@ int execute_builtins(t_tree_list *tree, t_env   **env, int flag)
     else if (flag == 2)
         ret = ft_cd(env, tree->cmd->cmd);
     else if (flag == 3)
-        ret = ft_env(*env);
+        ret = ft_call_env(*env, tree->cmd->cmd);
     else if (flag == 4)
         ret = ft_exit (tree->cmd->cmd);
     else if (flag == 5)

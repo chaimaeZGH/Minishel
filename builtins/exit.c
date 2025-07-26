@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 12:07:43 by rroundi           #+#    #+#             */
-/*   Updated: 2025/07/03 13:16:44 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/26 22:57:05 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,15 @@ int ft_exit(char **av)
     int exit_n;
 
     exit_n = 0;
+    if (av[1])
+    {
+        if(!valid_number(av[1])) // you should add the validating function
+        {
+            ft_putendl_fd("exit error :", 2);
+            ft_putendl_fd("argument must be a number", 2);
+            exit(255);
+        }
+    }
     if (av[1] && av[2])
     {
         ft_putendl_fd("too many arguments", 2);

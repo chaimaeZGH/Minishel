@@ -76,6 +76,13 @@ char    *true_path(char  *cmd, t_env *env)
 
     path = NULL;
     i = 0;
+    if (cmd && ft_strchr(cmd, '/'))
+    {
+        if (access(cmd, X_OK) == 0)
+            return (ft_strdup(cmd));
+        else
+            return (NULL);
+    }
     all_paths = get_path(cmd, env);
     if (!all_paths)
         return (NULL);

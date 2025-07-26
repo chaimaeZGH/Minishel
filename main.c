@@ -619,7 +619,7 @@ t_tree_list   *init_shell(char *s, char **env)
 			replace_quotes(tree);//
 			check_for_expend(tree, env);
 			remove_quots(tree);
-			check_empty_node(tree);
+			// check_empty_node(tree);
 			fill_double_point(tree);
 			// print_ast_topdown(tree);
 			// print_nodes(head);//
@@ -639,6 +639,8 @@ int main(int argc, char **argv, char **envp)
 	char        *s;
 	int			ret;
     t_tree_list *tree;
+	tree = NULL;
+	char	**a_env;
     t_env   *env;
     (void)envp;
     (void)argv;
@@ -648,22 +650,30 @@ int main(int argc, char **argv, char **envp)
 	env->exit_s = 0;
 	while (1)
 	{
+		a_env = to_array(env);
+		if (a_env == NULL)
+			return (1);
 		if (isatty(fileno(stdin)))
 			s = readline(GREEN"minishell> "RESET);
-	else
-	{
-    	char buffer[1024];
-    	int bytes_read = read(fileno(stdin), buffer, sizeof(buffer) - 1);
-   		if (bytes_read <= 0)
-      	  break;
-    	buffer[bytes_read] = '\0';
-    	s = ft_strtrim(buffer, "\n");
+		else
+		{
+    		char buffer[1024];
+    		int bytes_read = read(fileno(stdin), buffer, sizeof(buffer) - 1);
+   			if (bytes_read <= 0)
+      	 		 break;
+    		buffer[bytes_read] = '\0';
+    		s = ft_strtrim(buffer, "\n");
 	}
 		if (!s)
 			break;
 		if (*s) 
 		    add_history(s);
-        tree = init_shell(s, envp);
+		// printf("\n%s\n\n", s);
+        tree = init_shell(s, a_env);
+		if (tree)
+		{
+		/// your partner needs to free $p if it was expanded to nothing because of echo rr $p ff  it will print space in the place of $p instead it should do nothing
+		// printf("\n%s\n\n", tree->cmd->cmd[1]);
         // printf("");
         // debug_tree(tree);
         if (prepare_heredoc(tree, envp) == -1)
@@ -674,9 +684,9 @@ int main(int argc, char **argv, char **envp)
         //     // return (1);
 		// }
 		ret = execute(tree, &env);
-		printf("\n%d\n", ret);
-		printf("\n%d\n", env->exit_s);
-
+		printf("%d\n", env->exit_s);
+		// printf("%d\n", ret);
+		}
     }
 
     free_tree(tree);

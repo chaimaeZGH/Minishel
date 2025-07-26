@@ -141,6 +141,7 @@ int 	heredoc_redir(t_tokenlist  *curr, char	**env);
 char    *generate_filename(int  file);
 int		prepare_heredoc(t_tree_list *tree, char **env);
 char 	*expand_content(const char *content, char **env);
-int    handle_exec(char    **cmd);
+int     handle_exec(char    **cmd);
+int		ft_call_env(t_env	*env, char	**cmd);
 
 #endif
