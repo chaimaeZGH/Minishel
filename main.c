@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/26 22:41:25 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/27 04:04:05 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -463,14 +463,14 @@ void	check_for_expend(t_tree_list *root, char **env)
 				if (check_quotes(current_in->content) == 1)
 					current_in->expnd = false;
 			}
-			t_tokenlist *next = current_arg->next;
+			t_tokenlist *next = current_in->next;
 			if (current_in->type != HEREdocument)
 				process_expend_content(current_in, env);
 			current_in = next;
 		}
 		while (current_out)
 		{
-			t_tokenlist *next = current_arg->next;
+			t_tokenlist *next = current_out->next;
 			process_expend_content(current_out, env);
 			current_out = next;
 		}
@@ -627,32 +627,6 @@ void	fill_double_point(t_tree_list *tree)
 	fill_double_point(tree->right);
 }
 
-void	check_empty_node(t_tree_list *tree)
-{
-	t_tree_list	*brnch;
-	t_tokenlist	*dell;
-
-	if (!tree)
-		return ;
-	brnch = tree;
-	while (brnch->right != NULL)
-		brnch = brnch->right;
-	if (!brnch->cmd || !brnch->cmd->args)
-		return ;
-	dell = brnch->cmd->args;
-	while (dell->next != NULL)
-		dell = dell->next;
-	if (ft_strlen(dell->content) == 0)
-	{
-		if (dell->prev)
-			dell->prev->next = NULL;
-		else
-			brnch->cmd->args = NULL;
-		free(dell->content);
-		free(dell);
-	}
-}
-
 void	init_shell(char *s, char **env)
 {
 	t_tokenlist	*head;
@@ -669,7 +643,6 @@ void	init_shell(char *s, char **env)
 			replace_quotes(tree);
 			check_for_expend(tree, env);
 			remove_quots(tree);
-			// check_empty_node(tree);
 			fill_double_point(tree);
 			print_ast_topdown(tree);
 		}
