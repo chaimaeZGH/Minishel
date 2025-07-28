@@ -6,7 +6,7 @@
 /*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 19:58:40 by czghoumi          #+#    #+#             */
-/*   Updated: 2025/07/28 03:14:36 by czghoumi         ###   ########.fr       */
+/*   Updated: 2025/07/28 03:16:50 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,7 @@ int	syntax_erreur(t_tokenlist *head)
 	current = head;
 	while (current != NULL)
 	{
-		if (current->type != comnd && 
-			(current->next == NULL ))
+		if (current->type != comnd && current->next == NULL)
 			return (ft_error_msg(1), ++j);
 		if (current->type == PIPE && 
 			(current->prev == NULL || current->prev->type != comnd))
