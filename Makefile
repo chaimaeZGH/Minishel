@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=leak
+CFLAGS = -Wall -Wextra -Werror
 READLINE_PATH = $(shell brew --prefix readline)
 # LDFLAGS = -L$(READLINE_PATH)/lib -lreadline -lncurses
 # CPPFLAGS = -I$(READLINE_PATH)/include

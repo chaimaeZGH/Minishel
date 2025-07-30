@@ -90,7 +90,7 @@ int ft_export(char **av, t_env **c_env)
         {
             div = get_values(av[i]);
             set_env_value(c_env, div[0], div[1]);
-            free(div);
+            free_arr(div);
         }
         else
             set_env_value(c_env, av[i],NULL);
