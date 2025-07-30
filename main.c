@@ -1,6 +1,8 @@
 
 #include "minishell.h"
 
+int g_sig = 0;
+
 char	*map_type(t_type_list type)
 {
 	if (type == 0)
@@ -56,11 +58,9 @@ void	ft_error_msg(int errnum)
 
 int	syntax_erreur(t_tokenlist *head)
 {
-	int			i;
 	int			j;
 	t_tokenlist	*current;
 
-	i = 0;
 	j = 0;
 	current = head;
 	while (current != NULL)
@@ -661,10 +661,9 @@ int main(int argc, char **argv, char **envp)
     t_env   *env;
     (void)envp;
     (void)argv;
+	(void)argc;
 	setup_signals();
     env = copy_env(envp);
-    if (argc != 1)
-        return (printf(RED"invalid number of arguments\nUsage: ./minishell\n"RESET), 1);
 	env->exit_s = 0;
 	while (1)
 	{
@@ -674,52 +673,25 @@ int main(int argc, char **argv, char **envp)
 			g_sig = 0;
 		}
 		a_env = to_array(env);
-		if (a_env == NULL)
-			return (1);
-		if (isatty(fileno(stdin)))
-			{
-				s = readline(GREEN"minishell> "RESET);
-				if (!s)
-				{
-					printf("exit\n");
-					exit(0);
-				}
-			}
-		else
-		{
-    		char buffer[1024];
-    		int bytes_read = read(fileno(stdin), buffer, sizeof(buffer) - 1);
-   			if (bytes_read <= 0)
-      	 		 break;
-    		buffer[bytes_read] = '\0';
-    		s = ft_strtrim(buffer, "\n");
-	}
+		s = readline("minishell> ");
 		if (!s)
-			break;
-		if (*s) 
-		    add_history(s);
-		// printf("\n%s\n\n", s);
-        tree = init_shell(s, a_env);
-		if (tree)
 		{
-		/// your partner needs to free $p if it was expanded to nothing because of echo rr $p ff  it will print space in the place of $p instead it should do nothing
-		// printf("\n%s\n\n", tree->cmd->cmd[1]);
-        // printf("");
-        // debug_tree(tree);
+			printf("exit\n");
+			free_arr(a_env);
+			exit(0);
+		}
+		if (*s) 
+		add_history(s);
+	tree = init_shell(s, a_env);
+	free_arr(a_env);
+	if (tree)
+	{
         if (prepare_heredoc(tree, envp) == -1)
-            continue;
-        // if(execute(tree, &env) == 1)
-        // {
-        //     free_tree(tree);
-        //     // return (1);
-		// }
+			continue;
 		ret = execute(tree, &env);
-		//you need to telll your partner to update the exit status for the syntax error
-		printf("%d\n", ret);
-		printf("%d\n", env->exit_s);
-    	free_tree(tree);
-		free_arr(a_env);
+		free_tree(tree);
 		}
     }
+	free_env_list(env);
     return (ret);
 }

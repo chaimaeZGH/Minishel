@@ -11,9 +11,6 @@ int ft_strcmp(const char *s1, const char *s2) {
 
 int is_builtin(t_tree_list *tree)
 {
-    int flag;
-
-    flag = 0;
     if (ft_strcmp(tree->cmd->cmd[0], "echo") == 0)
         return (1);
     else if (ft_strcmp(tree->cmd->cmd[0], "cd") == 0)

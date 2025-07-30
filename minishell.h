@@ -20,7 +20,7 @@
 #define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
-
+#include <sys/wait.h>
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdio.h>
@@ -39,7 +39,7 @@
 #include <signal.h>
 #include <termios.h>
 
-int g_sig;
+extern int g_sig;
 typedef enum a_type_list
 {
 	comnd,
@@ -146,4 +146,6 @@ int     handle_exec(char    **cmd);
 int		ft_call_env(t_env	*env, char	**cmd);
 void 	handle_sigint(int sig);
 void	setup_signals(void);
+void free_env_list(t_env *head);
+
 #endif

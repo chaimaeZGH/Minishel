@@ -32,6 +32,7 @@ int     exec_bin(char   **cmd, t_env    *env)
     path = true_path(cmd[0], env);
     if (!path)
     {
+        free_arr(e_arr);
         fprintf(stderr, "%s :command not found\n", cmd[0]);
         env->exit_s = 127;
         return (127);        

@@ -13,6 +13,7 @@ char    *generate_filename(int  file)
 
     nbr = ft_itoa(file);
     str = ft_strjoin("/tmp/heredoc_",nbr);
+    free(nbr);
     return (str);
 }
 
@@ -25,6 +26,7 @@ int heredoc_redir(t_tokenlist  *curr, char  **env)
     int     fd;
     int     status;
     struct termios term;
+    char    *expanded_line;
     
     // if (curr->heredoc_prepared == 1)
         // return (0);/
@@ -51,7 +53,11 @@ int heredoc_redir(t_tokenlist  *curr, char  **env)
             if (!line || ft_strcmp(line, curr->content) == 0)
                 break;
             if (curr->expnd == true)
-                line = expand_content(line, env);
+            {
+                expanded_line = expand_content(line, env);
+                free(line);
+                line = expanded_line;
+            }
             write(fd, line, ft_strlen(line));
             write(fd, "\n", 1);
             free(line);
@@ -68,7 +74,7 @@ int heredoc_redir(t_tokenlist  *curr, char  **env)
         signal(SIGINT, handle_sigint);
         return (free(file_name), close(fd), -1);
     }
-
+    free(file_name);
     return (0);
 }
 

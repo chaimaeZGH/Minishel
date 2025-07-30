@@ -50,14 +50,12 @@ static size_t	cont2(char const *s1, char const *set)
 
 char	*ft_strtrim(char const *s1, char const *set)
 {
-	size_t	i;
 	size_t	j;
 	size_t	k;
 	char	*ptr;
 
 	if (s1 == NULL || set == NULL)
 		return (NULL);
-	i = 0;
 	j = cont1(s1, set);
 	k = cont2(s1, set);
 	if (j > k)
