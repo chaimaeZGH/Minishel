@@ -37,8 +37,9 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
+#include <termios.h>
 
-
+int g_sig;
 typedef enum a_type_list
 {
 	comnd,
@@ -143,5 +144,6 @@ int		prepare_heredoc(t_tree_list *tree, char **env);
 char 	*expand_content(const char *content, char **env);
 int     handle_exec(char    **cmd);
 int		ft_call_env(t_env	*env, char	**cmd);
-
+void 	handle_sigint(int sig);
+void	setup_signals(void);
 #endif

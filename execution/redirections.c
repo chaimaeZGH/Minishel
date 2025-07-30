@@ -1,5 +1,11 @@
 #include "../minishell.h"
 
+void    handle_sighere(int  sig)
+{
+    (void)sig;
+    printf("\n");
+    exit(1);
+}
 char    *generate_filename(int  file)
 {
     char     *nbr;
@@ -18,11 +24,15 @@ int heredoc_redir(t_tokenlist  *curr, char  **env)
     char    *line;
     int     fd;
     int     status;
-
+    struct termios term;
+    
     // if (curr->heredoc_prepared == 1)
         // return (0);/
+    fd = 0;
     curr->fd = file;
     file_name = generate_filename(file++);
+    tcgetattr(STDIN_FILENO, &term);
+    signal(SIGINT, SIG_IGN);
     pid = fork();
     if (pid == 0)
     {
@@ -30,11 +40,13 @@ int heredoc_redir(t_tokenlist  *curr, char  **env)
         if (fd == -1)
         {
             perror("failed heredoc open");
+            free(file_name);
             exit(1);
         }
         // printf("this is the delimiter!: %s\n", rr->content);
         while (1)
         {
+            signal(SIGINT, handle_sighere);
             line = readline("> ");
             if (!line || ft_strcmp(line, curr->content) == 0)
                 break;
@@ -49,13 +61,14 @@ int heredoc_redir(t_tokenlist  *curr, char  **env)
         free(file_name);
         exit(0);
     }
-    else
+    waitpid(pid, &status, 0);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
     {
-        waitpid(pid, &status, 0);
-        if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
-            return (-1);
-            free(file_name);
+        signal(SIGINT, handle_sigint);
+        return (free(file_name), close(fd), -1);
     }
+
     return (0);
 }
 
@@ -87,18 +100,18 @@ int in_redir(t_tokenlist    *in, int    *s_stdin)
         {
             file_name = generate_filename(curr->fd);
             fd = open (file_name, O_RDONLY);
-            free(file_name);
+            unlink(file_name);
             if (fd == -1)
             {
                 perror("heredoc");
                 return (-1);
             }
             if (curr->next == NULL)
-              {
-               dup2(fd, 0);
-              }
-                
-            close(fd);
+            {
+                dup2(fd, 0);
+                close(fd);
+            }
+            free(file_name);    
         }
         curr = curr->next;
     }
@@ -122,6 +135,7 @@ int out_redir(t_tokenlist *out, int *s_stdout)
             fd = open (curr->content, O_CREAT | O_WRONLY | O_APPEND, 0644);
         if (fd == -1)
         {
+            printf("\n\n%s\n", curr->content);
             perror("open out");
             return (-1);
         }
@@ -139,6 +153,7 @@ int execute_with_redirections(t_tree_list *tree, t_env **env)
     int s_stdout = -1;
     int ret;
 
+    ret = 0;
     if (tree->cmd->in)
     {
         if(tree->cmd->in->type == INredirection || tree->cmd->in->type == HEREdocument)
@@ -160,7 +175,22 @@ int execute_with_redirections(t_tree_list *tree, t_env **env)
             return (ret);
         }
     }
-    ret = is_builtin(tree);
+    if (!tree->cmd->cmd)
+    {
+        if (s_stdin != -1)
+        {
+            dup2(s_stdin, STDIN_FILENO);
+            close(s_stdin);
+        }
+        if (s_stdout != -1)
+        {
+            dup2(s_stdout, STDOUT_FILENO);
+            close(s_stdout);
+        }
+        return (0);
+    }
+    
+     ret = is_builtin(tree);
     if (ret != -1)
         ret = execute_builtins(tree, env, ret);
     else

@@ -633,6 +633,23 @@ t_tree_list   *init_shell(char *s, char **env)
 	return (tree);
 }
 
+void handle_sigint(int sig)
+{
+    (void)sig;
+    write(STDOUT_FILENO, "\n", 1);
+    rl_on_new_line();  // Tell readline we're on a new line
+    rl_replace_line("", 0);  // Clear the current input
+    rl_redisplay();  // Redisplay the prompt
+	g_sig = 1;
+}
+
+void setup_signals(void)
+{
+    signal(SIGINT, handle_sigint);
+    signal(SIGQUIT, SIG_IGN);
+	rl_catch_signals = 0;
+}
+
 int main(int argc, char **argv, char **envp)
 {
     
@@ -644,17 +661,30 @@ int main(int argc, char **argv, char **envp)
     t_env   *env;
     (void)envp;
     (void)argv;
+	setup_signals();
     env = copy_env(envp);
     if (argc != 1)
         return (printf(RED"invalid number of arguments\nUsage: ./minishell\n"RESET), 1);
 	env->exit_s = 0;
 	while (1)
 	{
+		if (g_sig == 1)
+		{
+			env->exit_s = 1;
+			g_sig = 0;
+		}
 		a_env = to_array(env);
 		if (a_env == NULL)
 			return (1);
 		if (isatty(fileno(stdin)))
-			s = readline(GREEN"minishell> "RESET);
+			{
+				s = readline(GREEN"minishell> "RESET);
+				if (!s)
+				{
+					printf("exit\n");
+					exit(0);
+				}
+			}
 		else
 		{
     		char buffer[1024];
@@ -677,18 +707,19 @@ int main(int argc, char **argv, char **envp)
         // printf("");
         // debug_tree(tree);
         if (prepare_heredoc(tree, envp) == -1)
-            return (-1);
+            continue;
         // if(execute(tree, &env) == 1)
         // {
         //     free_tree(tree);
         //     // return (1);
 		// }
 		ret = execute(tree, &env);
+		//you need to telll your partner to update the exit status for the syntax error
+		printf("%d\n", ret);
 		printf("%d\n", env->exit_s);
-		// printf("%d\n", ret);
+    	free_tree(tree);
+		free_arr(a_env);
 		}
     }
-
-    free_tree(tree);
     return (ret);
 }

@@ -15,6 +15,7 @@ int execute_pipe(t_tree_list *tree, t_env   **env)
         perror("pipe failed");
         return (1);
     }
+    signal(SIGINT, SIG_IGN);
     pid1 = fork();
     if (pid1 == -1)
     {
@@ -25,6 +26,7 @@ int execute_pipe(t_tree_list *tree, t_env   **env)
     }
     if (pid1 == 0)
     {
+        signal(SIGINT, SIG_DFL);
         close(fd[0]);
         dup2(fd[1], STDOUT_FILENO);
         close (fd[1]);
@@ -42,6 +44,7 @@ int execute_pipe(t_tree_list *tree, t_env   **env)
     }
     if (pid2 == 0)
     {
+        signal(SIGINT, SIG_DFL);
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
@@ -52,10 +55,23 @@ int execute_pipe(t_tree_list *tree, t_env   **env)
     close(fd[1]);
     waitpid(pid1, &status1, 0);
     waitpid(pid2, &status2, 0);
+    signal(SIGINT, handle_sigint);
     if (WIFEXITED(status2))
         ret = WEXITSTATUS(status2);
     if (WIFSIGNALED(status2))
-        ret = WTERMSIG(status2) + 128;
+    {
+        
+        if (WTERMSIG(status2) == SIGINT)
+        {
+            printf("\n");
+            ret = 130;
+        }
+        if (WTERMSIG(status2) == SIGINT)
+        {
+            printf("QUIT\n");
+            ret = 131;
+        }
+    }
     (*env)->exit_s = ret;
     return (ret);
 }

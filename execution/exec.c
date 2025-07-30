@@ -83,7 +83,7 @@ int execute(t_tree_list *tree, t_env **env)
                 (tree->cmd->in && (tree->cmd->in->type == INredirection || tree->cmd->in->type == HEREdocument)))
                 ret = execute_with_redirections(tree, env);
             else
-            {
+            {    
                 ret = is_builtin(tree);
                 if (ret != -1)
                     ret = execute_builtins(tree, env, ret);

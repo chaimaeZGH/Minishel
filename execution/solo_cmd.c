@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 12:40:48 by rroundi           #+#    #+#             */
-/*   Updated: 2025/07/24 13:56:43 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/29 15:50:00 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,13 @@ int     exec_bin(char   **cmd, t_env    *env)
     char    *path;
     pid_t   pid;
     int     status;
+    struct termios term;
 
     ret = 1;
+    // if (!cmd || !cmd[0] || cmd[0][0] == '\0')
+    // {
+    //      return (0);
+    // }    
     e_arr = to_array(env);
     if (!e_arr)
         return(ret);
@@ -31,6 +36,8 @@ int     exec_bin(char   **cmd, t_env    *env)
         env->exit_s = 127;
         return (127);        
     }
+    tcgetattr(STDIN_FILENO, &term);
+    signal(SIGINT, SIG_IGN);
     pid = fork();
     if (pid == -1)
     {
@@ -41,26 +48,34 @@ int     exec_bin(char   **cmd, t_env    *env)
     }
     if (pid == 0)
     {
+        signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
         execve(path, cmd, e_arr); 
         env->exit_s = handle_exec(cmd);
         free_arr(e_arr);
         free(path);
         exit(env->exit_s);
     }
-    if (waitpid(pid, &status, 0) == -1)
-    {
-        perror("waitpid failed");
-        free_arr(e_arr);
-        free(path);
-        return (ret);
-    }
+    waitpid(pid, &status, 0);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
     if (WIFEXITED(status))
         ret = WEXITSTATUS(status);
     if (WIFSIGNALED(status))
     {
-        ret = WTERMSIG(status);
-        ret = ret + 128;
+        // ret = WTERMSIG(status);
+        // ret = ret + 128;
+        if (WTERMSIG(status) == SIGINT)
+        {
+            printf("\n");
+            ret = 130;
+        }
+        if (WTERMSIG(status) == SIGQUIT)
+        {
+            printf("QUIT\n");
+            ret = 131;
+        }
     }
+    setup_signals();
     env->exit_s = ret;
     free_arr(e_arr);
     free(path);

@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 12:07:43 by rroundi           #+#    #+#             */
-/*   Updated: 2025/07/26 22:57:05 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/26 23:13:24 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,10 @@ int ft_exit(char **av)
     {
         if(!valid_number(av[1])) // you should add the validating function
         {
-            ft_putendl_fd("exit error :", 2);
-            ft_putendl_fd("argument must be a number", 2);
+            printf("exit\nbash: exit: %s: numeric argument required\n", av[1]);
             exit(255);
         }
+        ft_atoi(av[1]);
     }
     if (av[1] && av[2])
     {
@@ -53,12 +53,6 @@ int ft_exit(char **av)
     }
     if (av[1])
     {
-        if(!valid_number(av[1])) // you should add the validating function
-        {
-            ft_putendl_fd("exit error :", 2);
-            ft_putendl_fd("argument must be a number", 2);
-            exit(2);
-        }
         exit_n = ft_atoi(av[1]);
         exit_n = exit_n % 256;
     }

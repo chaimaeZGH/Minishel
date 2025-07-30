@@ -2,8 +2,11 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address
 CFLAGS = -Wall -Wextra -Werror
 READLINE_PATH = $(shell brew --prefix readline)
-LDFLAGS = -L$(READLINE_PATH)/lib -lreadline -lncurses
-CPPFLAGS = -I$(READLINE_PATH)/include
+# LDFLAGS = -L$(READLINE_PATH)/lib -lreadline -lncurses
+# CPPFLAGS = -I$(READLINE_PATH)/include
+
+LDFLAGS=-L/Users/rroundi/.brew/opt/readline/lib -lreadline -lhistory
+CPPFLAGS=-I/Users/rroundi/.brew/opt/readline/include
 
 SRCS = main.c nodes.c creat_tree.c print_tree.c test_env.c
 SRCS = main.c nodes.c creat_tree.c print_tree.c test_env.c builtins/cd.c builtins/echo.c builtins/env.c builtins/exit.c builtins/export.c builtins/pwd.c \
