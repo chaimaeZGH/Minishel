@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 19:33:22 by rroundi           #+#    #+#             */
-/*   Updated: 2025/07/26 19:56:35 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/07/31 18:47:50 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,18 +74,11 @@ int ft_export(char **av, t_env **c_env)
     ret = 0;
     i = 1;
     if (!av[1])
-    {
-        sorted = sort(*c_env);
-        exported_env(sorted);
-        return (0);
-    }
+        return ( sorted = sort(*c_env), exported_env(sorted), 0);
     while (av[i])
     {
         if (!if_valid(av[i]))
-        {
-            error_msg("export", "is not a valid indentifier", av[i]);
-            ret = 1;
-        }
+            ret = error_msg("export", "is not a valid indentifier", av[i]);
         else if (ft_strchr(av[i],'=') != NULL)
         {
             div = get_values(av[i]);

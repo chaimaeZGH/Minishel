@@ -619,7 +619,7 @@ t_tree_list   *init_shell(char *s, char **env)
 			replace_quotes(tree);//
 			check_for_expend(tree, env);
 			remove_quots(tree);
-			// check_empty_node(tree);
+			check_empty_node(tree);
 			fill_double_point(tree);
 			// print_ast_topdown(tree);
 			// print_nodes(head);//
@@ -682,16 +682,16 @@ int main(int argc, char **argv, char **envp)
 		}
 		if (*s) 
 		add_history(s);
-	tree = init_shell(s, a_env);
-	free_arr(a_env);
-	if (tree)
-	{
-        if (prepare_heredoc(tree, envp) == -1)
-			continue;
-		ret = execute(tree, &env);
-		free_tree(tree);
+		tree = init_shell(s, a_env);
+		if (tree)
+		{
+        	if (prepare_heredoc(tree, a_env) == -1)
+				continue;
+			ret = execute(tree, &env);
+			free_tree(tree);
 		}
-    }
+		free_arr(a_env);
+	}
 	free_env_list(env);
     return (ret);
 }

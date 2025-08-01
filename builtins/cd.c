@@ -50,10 +50,7 @@ int ft_cd(t_env **c_env, char **av)
         if (res == 0)
             update_pwd(c_env);
         else
-        {
-            perror(av[1]);
-            return (1);
-        }
+            return (perror(av[1]), 1);
     }
     return (0);
 }
