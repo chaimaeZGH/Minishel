@@ -6,13 +6,13 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 21:42:20 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/01 19:51:27 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/01 22:28:18 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	prepare_heredoc(t_tree_list *tree, char **env)
+int	prepare_heredoc(t_tree_list *tree, char **env, int exit_s)
 {
 	t_tokenlist	*curr;
 
@@ -23,7 +23,7 @@ int	prepare_heredoc(t_tree_list *tree, char **env)
 		{
 			if (curr->type == HEREdocument)
 			{
-				if (heredoc_redir(curr, env) == -1)
+				if (heredoc_redir(curr, env, exit_s) == -1)
 					return (-1);
 			}
 			curr = curr->next;
@@ -31,9 +31,9 @@ int	prepare_heredoc(t_tree_list *tree, char **env)
 	}
 	if (tree->type == PIPE)
 	{
-		if (prepare_heredoc(tree->left, env) == -1)
+		if (prepare_heredoc(tree->left, env, exit_s) == -1)
 			return (-1);
-		if (prepare_heredoc(tree->right, env) == -1)
+		if (prepare_heredoc(tree->right, env, exit_s) == -1)
 			return (-1);
 	}
 	return (0);

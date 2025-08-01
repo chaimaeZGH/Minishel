@@ -31,7 +31,7 @@ void    no_fd(char  *file_name)
     free(file_name);
     exit(1);
 }
-void    write_in_file(t_tokenlist *curr, char   *file_name, char **env)
+void    write_in_file(t_tokenlist *curr, char   *file_name, char **env, int exit_s)
 {
     int fd;
     char    *line;
@@ -48,7 +48,7 @@ void    write_in_file(t_tokenlist *curr, char   *file_name, char **env)
             break;
         if (curr->expnd == true)
         {
-            expanded_line = expand_content(line, env);
+            expanded_line = expand_content(line, env, exit_s);
             free(line);
             line = expanded_line;
         }
@@ -60,7 +60,7 @@ void    write_in_file(t_tokenlist *curr, char   *file_name, char **env)
 }
 
 
-int heredoc_redir(t_tokenlist  *curr, char  **env)
+int heredoc_redir(t_tokenlist  *curr, char  **env, int exit_s)
 {
     static int  file;
     char    *file_name;
@@ -74,7 +74,7 @@ int heredoc_redir(t_tokenlist  *curr, char  **env)
     signal(SIGINT, SIG_IGN);
     pid = fork();
     if (pid == 0)
-        write_in_file(curr, file_name, env);
+        write_in_file(curr, file_name, env, exit_s);
     waitpid(pid, &status, 0);
     tcsetattr(STDIN_FILENO, TCSANOW, &term);
     if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)

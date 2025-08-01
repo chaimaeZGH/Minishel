@@ -75,6 +75,12 @@ typedef struct s_cmdlist
     t_tokenlist	*in;
 }				t_cmdlist;
 
+typedef struct s_char
+{
+	const char		*str;
+	char			*one;
+}					t_char;
+
 typedef struct s_tree_list
 {
 	t_type_list			type;
@@ -91,7 +97,7 @@ void		ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new);
 void		free_list(t_tokenlist *head);
 void		free_tree(t_tree_list *tree);
 void print_nodes(t_tokenlist *head);
-void		process_expend_content(t_tokenlist *token, char **env);
+void		process_expend_content(t_tokenlist *token, char **env, int	exit_s);
 
 
 
@@ -138,10 +144,10 @@ int 	execute_out_redirection(t_tree_list *tree, char *fn, t_env **env);
 int		execute_in_redirection(t_tree_list *tree, char *fn, t_env **env);
 int 	execute_with_redirections(t_tree_list *tree, t_env **env);
 int 	ft_strcmp(const char *s1, const char *s2);
-int 	heredoc_redir(t_tokenlist  *curr, char	**env);
+int 	heredoc_redir(t_tokenlist  *curr, char  **env, int exit_s);
 char    *generate_filename(int  file);
-int		prepare_heredoc(t_tree_list *tree, char **env);
-char 	*expand_content(const char *content, char **env);
+int		prepare_heredoc(t_tree_list *tree, char **env, int	exit_s);
+char 	*expand_content(const char *content, char **env, int	exit_s);
 int     handle_exec(char    **cmd);
 int		ft_call_env(t_env	*env, char	**cmd);
 void 	handle_sigint(int sig);
