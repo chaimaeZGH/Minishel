@@ -1,10 +1,22 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 READLINE_PATH = $(shell brew --prefix readline)
+# LDFLAGS = -L$(READLINE_PATH)/lib -lreadline -lncurses
+# CPPFLAGS = -I$(READLINE_PATH)/include
 LDFLAGS = -L$(READLINE_PATH)/lib -lreadline -lncurses
 CPPFLAGS = -I$(READLINE_PATH)/include
 
+# LDFLAGS=-L/Users/czghoumi/.brew/opt/readline/lib -lreadline -lhistory
+# CPPFLAGS=-I/Users/czghoumi/.brew/opt/readline/include
+
 SRCS = main.c nodes.c creat_tree.c print_tree.c test_env.c
+SRCS = main.c nodes.c creat_tree.c print_tree.c test_env.c builtins/cd.c builtins/echo.c builtins/env.c builtins/exit.c builtins/export.c builtins/pwd.c \
+			libft/ft_atoi.c libft/ft_strncmp.c libft/ft_strlen.c libft/ft_strdup.c libft/ft_putchar_fd.c libft/ft_putendl_fd.c \
+			helper/env.c helper/error.c libft/ft_putstr_fd.c libft/ft_strchr.c   libft/ft_isalnum.c libft/ft_substr.c libft/ft_isalpha.c \
+			libft/ft_isdigit.c builtins/unset.c helper/convert.c libft/ft_strjoin.c libft/ft_split.c helper/free.c execution/solo_cmd.c \
+			execution/ex_builtins.c execution/exec.c execution/execute_pipe.c execution/redirections.c 
+
+
 OBJS = $(SRCS:.c=.o)
 
 # SRCS_B = 
