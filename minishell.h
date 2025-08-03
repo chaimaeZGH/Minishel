@@ -77,7 +77,7 @@ typedef struct s_cmdlist
 
 typedef struct s_char
 {
-	const char		*str;
+	char		*str;
 	char			*one;
 }					t_char;
 
@@ -153,7 +153,7 @@ int 	ft_strcmp(const char *s1, const char *s2);
 int 	heredoc_redir(t_tokenlist  *curr, char  **env, int exit_s);
 char    *generate_filename(int  file);
 int		prepare_heredoc(t_tree_list *tree, char **env, int	exit_s);
-char 	*expand_content(const char *content, char **env, int	exit_s);
+char 	*expand_content(char *content, char **env, int	exit_s);
 int     handle_exec(char    **cmd);
 int		ft_call_env(t_env	*env, char	**cmd);
 void 	handle_sigint(int sig);

@@ -105,7 +105,7 @@ int	append_char(char **result, char c)
 	return (1);
 }
 
-int	expand_var(const char *content, int *i, char **result, char **env, int exit_s)
+int	expand_var(t_combo	*tst, int *i, char **result, char **env)
 {
 	char	*expanded;
 	char	*new_result;
@@ -113,7 +113,7 @@ int	expand_var(const char *content, int *i, char **result, char **env, int exit_
 	size_t	len_exp;
 
 	len_result = ft_strlen(*result);
-	expanded = expand_variable(content, i, env, exit_s);
+	expanded = expand_variable(tst->str, i, env, tst->i);
 	if (!expanded)
 		return (0);
 	len_exp = ft_strlen(expanded);
@@ -148,13 +148,19 @@ int	handle_quotes_expend(char c, char *quote_char, int *i)
 int	process_char(t_char *strac, int *i, char **result, char **env, int exit_s)
 {
 	char	c;
+	t_combo	*tst;
 
+	tst = malloc(sizeof (t_combo));
+	if(!tst)
+		return (0);
 	c = strac->str[*i];
 	if (handle_quotes_expend(c, strac->one, i))
 		return (1);
 	if (c == '$' && *strac->one != 1)
 	{
-		if (!expand_var(strac->str, i, result, env, exit_s))
+		tst->i=exit_s;
+		tst->str = strac->str;
+		if (!expand_var(tst, i, result, env))
 			return (0);
 	}
 	else
@@ -166,7 +172,7 @@ int	process_char(t_char *strac, int *i, char **result, char **env, int exit_s)
 	return (1);
 }
 
-char	*expnd_cont(const char *content, char **env, int exit_s)
+char	*expnd_cont(char *content, char **env, int exit_s)
 {
 	char	*result;
 	char	quote_char;
@@ -193,7 +199,7 @@ char	*expnd_cont(const char *content, char **env, int exit_s)
 	return (result);
 }
 
-char	*expand_content(const char *content, char **env, int exit_s)
+char	*expand_content(char *content, char **env, int exit_s)
 {
 	char	*result;
 	int		i;
