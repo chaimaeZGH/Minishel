@@ -1,32 +1,12 @@
 #include "../minishell.h"
 
-void free_env_list(t_env *head)
-{
-    t_env *current;
-    t_env *next;
-    
-    current = head;
-    while (current)
-    {
-        next = current->next;
-        free(current->key);
-        free(current->value);
-        free(current);
-        current = next;
-    }
-}
-
 t_env   *create_node(char    *key, char  *value)
 {
     t_env   *new_node;
 
     new_node = malloc(sizeof(t_env));
-    if (!new_node)
-        return (NULL);
     if (key)
         new_node->key = ft_strdup(key);
-    else 
-        new_node->key = NULL;
     if (value)
         new_node->value = ft_strdup(value);
     else
@@ -67,7 +47,6 @@ t_env   *copy_env(char **env)
             value = eq_pos + 1;
             new_node = create_node(key, value);
             add_front(&head, new_node);
-            // free_env_list(new_node);
             *eq_pos = '=';
         }
         i++;

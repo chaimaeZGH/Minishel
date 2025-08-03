@@ -673,7 +673,6 @@ bool	copy_args_to_cmd(t_cmdlist *cmd, t_tokenlist *args, int count)
 		{
 			if (args->expnd == false)
 			{
-				printf("this 0\n");
 				n = 0;
 				spl = ft_split(args->content,' ');
 				while(spl[n] != NULL)
@@ -687,7 +686,6 @@ bool	copy_args_to_cmd(t_cmdlist *cmd, t_tokenlist *args, int count)
 					}
 					i++;
 					n++;
-					printf("this 1\n");
 				}
 				n = 0;
 				while(spl[n] != NULL)
@@ -798,10 +796,10 @@ void handle_sigint(int sig)
 {
     (void)sig;
     write(STDOUT_FILENO, "\n", 1);
-    rl_on_new_line();  // Tell readline we're on a new line
-    rl_replace_line("", 0);  // Clear the current input
-    rl_redisplay();  // Redisplay the prompt
-	g_sig = 1;
+    rl_on_new_line();
+    rl_replace_line("", 0);
+    rl_redisplay();
+	g_sig = SIGINT;
 }
 
 void setup_signals(void)
@@ -823,18 +821,18 @@ int main(int argc, char **argv, char **envp)
     (void)envp;
     (void)argv;
 	(void)argc;
-	setup_signals();
     env = copy_env(envp);
 	env->exit_s = 0;
+	setup_signals();
 	while (1)
 	{
-		if (g_sig == 1)
+		a_env = to_array(env);
+		s = readline("minishell> ");
+		if (g_sig == SIGINT)
 		{
 			env->exit_s = 1;
 			g_sig = 0;
 		}
-		a_env = to_array(env);
-		s = readline("minishell> ");
 		if (!s)
 		{
 			printf("exit\n");
@@ -847,11 +845,16 @@ int main(int argc, char **argv, char **envp)
 		if (tree)
 		{
         	if (prepare_heredoc(tree, a_env, env->exit_s) == -1)
+			{
+				free_tree(tree);
+				free_arr(a_env);
 				continue;
+			}
 			ret = execute(tree, &env);
 			free_tree(tree);
 		}
 		free_arr(a_env);
+		
 	}
 	free_env_list(env);
     return (ret);

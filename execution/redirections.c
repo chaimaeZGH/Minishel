@@ -135,14 +135,17 @@ int in_redir(t_tokenlist    *in, int    *s_stdin)
     {
         if (curr->type == INredirection)
         {
+            if (curr->expnd == false)
+            {
+                ft_putstr_fd("minishell: ambiguous redirect\n", 2);
+                return (-1);
+            }
             if (for_inredir(curr, in) == -1)
                 return (-1);
         }
         if (curr->type == HEREdocument)
-        {
             if (for_heredoc(curr) == -1)
                 return (-1);
-        }
         curr = curr->next;
     }
     return (0);
@@ -175,13 +178,17 @@ int out_redir(t_tokenlist *out, int *s_stdout)
         return (-1);
     while (curr)
     {
+        if (curr->expnd == false)
+        {
+            ft_putstr_fd("minishell: ambiguous redirect\n", 2);
+            return (-1);
+        }
         if (curr->type == OUTredirection)
             fd = open (curr->content, O_CREAT | O_WRONLY | O_TRUNC, 0644);
         else if (curr->type == OUTappend)
             fd = open (curr->content, O_CREAT | O_WRONLY | O_APPEND, 0644);
         if (fd == -1)
         {
-            printf("\n\n%s\n", curr->content);
             perror("open out");
             return (-1);
         }
@@ -244,10 +251,10 @@ int execute_with_redirections(t_tree_list *tree, t_env **env)
     ret = 0;
     ret = in_redir_call(tree, &s_stdin, env);
     if (ret == -1)
-        return (ret);
+        return (1);
     ret = out_redir_call(tree, &s_stdout, env);
     if (ret == -1)
-        return (ret);
+        return (1);
     if (!tree->cmd->cmd)
         return (no_command(s_stdin, s_stdout));
     ret = is_builtin(tree);

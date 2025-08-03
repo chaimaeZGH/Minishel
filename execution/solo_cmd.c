@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 12:40:48 by rroundi           #+#    #+#             */
-/*   Updated: 2025/07/29 15:50:00 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/01 23:38:58 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,9 @@ int     exec_bin(char   **cmd, t_env    *env)
     // if (!cmd || !cmd[0] || cmd[0][0] == '\0')
     // {
     //      return (0);
-    // }    
+    // }
+    // if (ft_strcmp())
+        
     e_arr = to_array(env);
     if (!e_arr)
         return(ret);
