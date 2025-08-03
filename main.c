@@ -324,7 +324,7 @@ int	handle_quotes(char *line, int *i, t_tokenlist **head, char **ll)
 	free(result);
 	if (j > 0 && line[j - 1] != ' ')
 		merg_last_with_one(head);
-	if (line[*i] != ' ' && line[*i] != '\0')
+	if (line[*i] != ' ' && line[*i] != '\0' && line[*i] != '\"' && line[*i] != '\'')
 		*ll = (ft_lstlastn(*head))->content;
 	if (*ll != NULL)
 		merge_this_with_next(head, *ll);
