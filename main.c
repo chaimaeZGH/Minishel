@@ -96,6 +96,9 @@ int	syntax_erreur(t_tokenlist *head)
 		if (current->type == PIPE && 
 			(current->prev == NULL || current->prev->type != comnd))
 			return (ft_error_msg(2), ++j);
+		if ((current->type != PIPE && current->type !=comnd) && 
+			(current->next->type!=comnd && current->next->type!=PIPE))
+			return (ft_error_msg(1), ++j);
 		current = current->next;
 	}
 	return (j);
@@ -150,12 +153,14 @@ void	merge_file_cmd(t_tokenlist **head)
 		return ;
 	continue_merge(head);
 }
+
 void	three_lines(t_check *strackt, int i, int j, char *cmd)
 {
 	strackt->str = ft_lstnewn(ft_strdup(cmd));
 	strackt->i = j + i;
 	free(cmd);
 }
+
 t_check	*extract_cmd_quat(char *line, int i, char c)
 {
 	char	*cmd;
@@ -191,11 +196,12 @@ t_check	*extract_cmd(char *line, int i)
 	t_check	*strackt;
 	int		j;
 	int		k;
- 
+
 	j = i;
 	k = 0;
 	while (line[j] && line[j] != ' ' && line[j] != '|' && 
-			line[j] != '<' && line[j] != '>' && line[j] != '\'' && line[j] != '\"')
+		line[j] != '<' && line[j] != '>' && 
+		line[j] != '\'' && line[j] != '\"')
 		j++;
 	cmd = malloc(j - i + 1);
 	if (!cmd)
@@ -209,9 +215,7 @@ t_check	*extract_cmd(char *line, int i)
 		free(cmd);
 		return (NULL);
 	}
-	strackt->str = ft_lstnewn(ft_strdup(cmd));
-	strackt->i = j;
-	free(cmd);
+	three_lines(strackt, 0, j, cmd);
 	return (strackt);
 }
 
@@ -220,6 +224,7 @@ void    skip_whitespaces(int *i, char *line)
 	while (line[*i] == ' ' || line[*i] == '\t')
 		(*i)++;
 }
+
 void	merge_this_with_next(t_tokenlist **lst, char *ll)
 {
 	t_tokenlist	*current;
@@ -294,123 +299,161 @@ void	handle_operators(int *i, char *line, t_tokenlist **head)
 	}
 }
 
-int split_line(char *line, t_tokenlist **head)
+
+int	handle_regular_cmd(char *line, int *i, t_tokenlist **head)
 {
 	t_check	*result;
-	int		i;
+
+	result = extract_cmd(line, *i);
+	if (!result)
+		return (printf(RED"Memory allocation error\n"RESET), 1);
+	ft_lstadd_backn(head, result->str);
+	*i = result->i;
+	free(result);
+	return (0);
+}
+
+int	handle_quotes(char *line, int *i, t_tokenlist **head, char **ll)
+{
+	t_check	*result;
 	int		j;
+
+	j = *i;
+	result = extract_cmd_quat(line, *i, line[*i]);
+	if (!result)
+		return (printf(RED"Syntax error: unclosed quotes\n"RESET), 1);
+	ft_lstadd_backn(head, result->str);
+	*i = result->i;
+	free(result);
+	if (j > 0 && line[j - 1] != ' ')
+		merg_last_with_one(head);
+	if (line[*i] != ' ' && line[*i] != '\0')
+		*ll = (ft_lstlastn(*head))->content;
+	return (0);
+}
+
+int	process_line_part(char *line, int *i, t_tokenlist **head, char **ll)
+{
+	skip_whitespaces(i, line);
+	if (line[*i] == '\0')
+		return (0);
+	if (line[*i] == '\'' || line[*i] == '\"')
+		return (handle_quotes(line, i, head, ll));
+	else if (line[*i] == '|' || line[*i] == '<' || line[*i] == '>')
+	{
+		handle_operators(i, line, head);
+		return (0);
+	}
+	return (handle_regular_cmd(line, i, head));
+}
+
+int	split_line(char *line, t_tokenlist **head)
+{
+	int		i;
 	char	*ll;
 
-	ll = NULL;
 	i = 0;
+	ll = NULL;
 	while (line[i] != '\0')
 	{
-		skip_whitespaces(&i, line);
-		if (line[i] == '\0')
-			break ;
-		if (line[i] == '\'' || line[i] == '\"')
-		{
-			j = i;
-			result = extract_cmd_quat(line, i, line[i]);
-			if (!result)
-				return printf(RED"Syntax error: unclosed quotes\n"RESET), 1;
-			ft_lstadd_backn(head, result->str);
-			i = result->i;
-			free(result);
-			if(j > 0 && line[j-1] != ' ')
-				merg_last_with_one(head);
-			if(line[i] != ' ' && line[i] != '\0')
-				ll = (ft_lstlastn(*head))->content;
-		}
-		else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
-			handle_operators(&i, line, head);
+		if (process_line_part(line, &i, head, &ll) != 0)
+			return (1);
 		else
 		{
-			result = extract_cmd(line, i);
-			if (!result) 
-				return printf(RED"Memory allocation error\n"RESET), 1;
-			ft_lstadd_backn(head, result->str);
-			i = result->i;
-			free(result);
+			if (ll != NULL)
+				merge_this_with_next(head, ll);
 		}
-		if(ll != NULL)
-			merge_this_with_next(head,ll);
 	}
-	return 0;
+	return (0);
+}
+
+void	change_quots(t_combo *new, int j, char quote_char)
+{
+	while (new->str[new->i] != '\0')
+	{
+		if ((new->str[new->i] == '\'' || new->str[new->i] == '\"') && j < 2)
+		{
+			if (j == 0)
+			{
+				quote_char = new->str[new->i];
+				if (quote_char == '\'')
+					new->str[new->i] = 1;
+				else
+					new->str[new->i] = 2;
+				j = 1;
+			}
+			else if (new->str[new->i] == quote_char)
+			{
+				if (quote_char == '\'')
+					new->str[new->i] = 1;
+				else
+					new->str[new->i] = 2;
+				j = 0;
+			}
+		}
+		(new->i)++;
+	}
 }
 
 void	process_token_content(t_tokenlist *token)
 {
-	char	*new_content;
-	int		i;
 	int		j;
 	char	quote_char;
+	t_combo	*new_cont;
+	char	*tmp;
 
 	if (!token || !token->content)
-		return;
-	new_content = strdup(token->content);
-	if (!new_content)
-		return;
-	i = 0;
+		return ;
+	new_cont = malloc(sizeof(t_combo));
+	if (!new_cont)
+		return ;
+	new_cont->str = strdup(token->content);
+	if (!new_cont->str)
+		return ;
+	new_cont->i = 0;
 	j = 0;
 	quote_char = 0;
-	while (new_content[i] != '\0')
-	{
-		if ((new_content[i] == '\'' || new_content[i] == '\"') && j < 2)
-		{
-			if (j == 0)
-			{
-				quote_char = new_content[i];
-				if (quote_char == '\'')
-					new_content[i] = 1;
-				else
-					new_content[i] = 2;
-				j = 1;
-			} 
-			else if (new_content[i] == quote_char)
-			{
-				if (quote_char == '\'')
-					new_content[i] = 1;
-				else
-					new_content[i] = 2;
-				j = 0;
-			}
-		}
-		i++;
-	}
+	change_quots(new_cont, j, quote_char);
+	tmp = new_cont->str;
 	free(token->content);
-	token->content = new_content;
+	token->content = tmp;
+	free(new_cont);
 }
 
-void	replace_quotes(t_tree_list *root)
+void	replace_eache_node(t_tree_list *root)
 {
-	t_tokenlist *current_arg;
-	t_tokenlist *current_in;
-	t_tokenlist *current_out;
+	t_tokenlist	*current_arg;
+	t_tokenlist	*current_in;
+	t_tokenlist	*current_out;
 
-	if (!root) 
-		return;
-	if(root->type == comnd && root->cmd)
+	if (root->type == comnd && root->cmd)
 	{
 		current_arg = root->cmd->args;
 		current_in = root->cmd->in;
 		current_out = root->cmd->out;
-		while (current_arg) 
+		while (current_arg)
 		{
 			process_token_content(current_arg);
 			current_arg = current_arg->next;
 		}
-		while (current_in) 
+		while (current_in)
 		{
 			process_token_content(current_in);
 			current_in = current_in->next;
 		}
-		while (current_out) 
+		while (current_out)
 		{
 			process_token_content(current_out);
 			current_out = current_out->next;
 		}
 	}
+}
+
+void	replace_quotes(t_tree_list *root)
+{
+	if (!root)
+		return ;
+	replace_eache_node(root);
 	replace_quotes(root->right);
 	replace_quotes(root->left);
 }
@@ -614,7 +657,7 @@ void	remove_quots(t_tree_list *root)
 	remove_quots(root->left);
 }
 
-static int	ft_count(char const *s, char c)
+int	ft_count(char const *s, char c)
 {
 	int	i;
 	int	j;
@@ -658,12 +701,53 @@ void	free_cmd_array(char **cmd, int i)
 	free(cmd);
 }
 
+bool	copy_split(int *i, t_cmdlist *cmd, t_tokenlist *args)
+{
+	int		n;
+	char	**spl;
+
+	n = 0;
+	spl = ft_split(args->content,' ');
+	while(spl[n] != NULL)
+	{
+		cmd->cmd[*i] = strdup(spl[n]);
+		if (!cmd->cmd[*i])
+		{
+			free_cmd_array(cmd->cmd, *i);
+			cmd->cmd = NULL;
+			return (false);
+		}
+		(*i)++;
+		n++;
+	}
+	n = 0;
+	while(spl[n] != NULL)
+	{
+		free(spl[n]);
+		n++;
+	}
+	free(spl);
+	return (true);
+}
+
+bool	copy_rest(int *i, t_cmdlist *cmd, t_tokenlist *args)
+{
+	cmd->cmd[*i] = strdup(args->content);
+	if (!cmd->cmd[*i])
+	{
+		free_cmd_array(cmd->cmd, *i);
+		cmd->cmd = NULL;
+		return (false);
+	}
+	(*i)++;
+	return (true);
+}
+
 bool	copy_args_to_cmd(t_cmdlist *cmd, t_tokenlist *args, int count)
 {
 	int	i;
-	char **spl;
+
 	i = 0;
-	int n;
 	cmd->cmd = malloc(sizeof(char *) * (count + 1));
 	if (!cmd->cmd)
 		return (false);
@@ -673,40 +757,14 @@ bool	copy_args_to_cmd(t_cmdlist *cmd, t_tokenlist *args, int count)
 		{
 			if (args->expnd == false)
 			{
-				n = 0;
-				spl = ft_split(args->content,' ');
-				while(spl[n] != NULL)
-				{
-					cmd->cmd[i] = strdup(spl[n]);
-					if (!cmd->cmd[i])
-					{
-						free_cmd_array(cmd->cmd, i);
-						cmd->cmd = NULL;
-						return (false);
-					}
-					i++;
-					n++;
-				}
-				n = 0;
-				while(spl[n] != NULL)
-				{
-					free(spl[n]);
-					n++;
-				}
-				free(spl);
+				if (copy_split(&i, cmd, args) == false)
+					return (false);
 			}
 			else
 			{
-				cmd->cmd[i] = strdup(args->content);
-				if (!cmd->cmd[i])
-				{
-					free_cmd_array(cmd->cmd, i);
-					cmd->cmd = NULL;
+				if (copy_rest(&i, cmd, args) == false)
 					return (false);
-				}
-				i++;
 			}
-			
 		}
 		args = args->next;
 	}
@@ -736,30 +794,6 @@ void fill_double_point(t_tree_list *tree)
 		fill_cmd_from_args(tree->cmd);
 	fill_double_point(tree->left);
 	fill_double_point(tree->right);
-}
-
-void check_empty_node(t_tree_list *tree)
-{
-	if (!tree)
-		return;
-	t_tree_list *brnch = tree;
-	while (brnch->right != NULL)
-		brnch = brnch->right;
-	if (!brnch->cmd || !brnch->cmd->args)
-		return;
-	t_tokenlist *dell = brnch->cmd->args;
-	while (dell->next != NULL)
-		dell = dell->next;
-
-	if (ft_strlen(dell->content) == 0)
-	{
-		if (dell->prev)
-			dell->prev->next = NULL;
-		else
-			brnch->cmd->args = NULL;
-		free(dell->content);
-		free(dell);
-	}
 }
 
 t_tree_list   *init_shell(char *s, char **env, int	exit_s)
@@ -794,68 +828,87 @@ t_tree_list   *init_shell(char *s, char **env, int	exit_s)
 
 void handle_sigint(int sig)
 {
-    (void)sig;
-    write(STDOUT_FILENO, "\n", 1);
-    rl_on_new_line();
-    rl_replace_line("", 0);
-    rl_redisplay();
+	(void)sig;
+	write(STDOUT_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 	g_sig = SIGINT;
 }
 
 void setup_signals(void)
 {
-    signal(SIGINT, handle_sigint);
-    signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, handle_sigint);
+	signal(SIGQUIT, SIG_IGN);
 	rl_catch_signals = 0;
 }
 
-int main(int argc, char **argv, char **envp)
+void	for_signals(t_env *env, char *s, char **a_env)
 {
-    
-	char        *s;
-	int			ret;
-    t_tree_list *tree;
-	tree = NULL;
-	char	**a_env;
-    t_env   *env;
-    (void)envp;
-    (void)argv;
-	(void)argc;
-    env = copy_env(envp);
+	if (g_sig == SIGINT)
+	{
+		env->exit_s = 1;
+		g_sig = 0;
+	}
+	if (!s)
+	{
+		printf("exit\n");
+		free_arr(a_env);
+		exit(0);
+	}
+	if (*s)
+		add_history(s);
+}
+
+void	cleanup(t_tree_list *tree, char	**a_env)
+{
+	if (tree)
+		free_tree(tree);
+	free_arr(a_env);
+}
+
+t_env	*init_env(char **envp)
+{
+	t_env	*env;
+
+	if (!envp || !envp[0])
+		return (NULL);
+	env = copy_env(envp);
 	env->exit_s = 0;
 	setup_signals();
+	return (env);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	char		*s;
+	int			ret;
+	t_tree_list	*tree;
+	char		**a_env;
+	t_env		*env;
+
+	(void)argv;
+	(void)argc;
+	env = init_env(envp);
 	while (1)
 	{
 		a_env = to_array(env);
 		s = readline("minishell> ");
-		if (g_sig == SIGINT)
+		for_signals(env, s, a_env);
+		if (!envp || !envp[0])
 		{
-			env->exit_s = 1;
-			g_sig = 0;
+			ft_putstr_fd("no environment\n", 2);
+			continue ;
 		}
-		if (!s)
-		{
-			printf("exit\n");
-			free_arr(a_env);
-			exit(0);
-		}
-		if (*s) 
-		add_history(s);
 		tree = init_shell(s, a_env, env->exit_s);
-		if (tree)
+		if (tree && prepare_heredoc(tree, a_env, env->exit_s) == -1)
 		{
-        	if (prepare_heredoc(tree, a_env, env->exit_s) == -1)
-			{
-				free_tree(tree);
-				free_arr(a_env);
-				continue;
-			}
-			ret = execute(tree, &env);
-			free_tree(tree);
+			cleanup(tree, a_env);
+			env->exit_s = 1;
+			continue ;
 		}
-		free_arr(a_env);
-		
+		ret = execute(tree, &env);
+		cleanup(tree, a_env);
 	}
-	free_env_list(env);
-    return (ret);
+	return (free_env_list(env), ret);
 }

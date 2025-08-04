@@ -1,4 +1,3 @@
-
 #include "minishell.h"
 
 char	*get_env_value(char **env, const char *name)
@@ -35,6 +34,11 @@ char	*ft_strndup(const char *s, size_t n)
 
 static char	*handle_special_cases(const char *str, int *index, int exit_s)
 {
+	if ((str[*index + 1] == '\'' && str[*index - 1] == 2 ))
+	{
+		(*index)=(*index)+ft_strlen((char *)str);
+		return (ft_strdup((char *)str));
+	}
 	if	(str[*index + 1] == '\0')
 		return (ft_strdup("$"));
 	if	(str[*index + 1] == '$')
@@ -44,20 +48,11 @@ static char	*handle_special_cases(const char *str, int *index, int exit_s)
 		return (ft_itoa(pid));
 	}
 	if (str[*index + 1] == '?')
-	{
-		(*index)++;
-		return (ft_itoa(exit_s));
-	}
+		return ((*index)++,ft_itoa(exit_s));
 	if (str[*index + 1] == '0')
-	{
-		(*index)++;
-		return (ft_strdup("minishell"));
-	}
+		return ((*index)++,ft_strdup("minishell"));
 	if (ft_isdigit(str[*index + 1]))
-	{
-		(*index)++;
-		return (ft_strdup(""));
-	}
+		return ((*index)++,ft_strdup(""));
 	return (NULL);
 }
 
@@ -86,7 +81,6 @@ char	*expand_variable(const char *str, int *index, char **env, int exit_s)
 		result = ft_strdup("");
 	return (result);
 }
-
 
 int	append_char(char **result, char c)
 {
@@ -221,12 +215,13 @@ void	process_expend_content(t_tokenlist *token, char **env, int exit_s)
 	if (!token || !token->content)
 		return ;
 	new_content = expand_content(token->content, env, exit_s);
-	if(ft_strchr(token->content,'$') != NULL && ft_strchr(new_content,' ')!=NULL)
+	if(ft_strchr(token->content,'$') != NULL && ft_count(new_content,' ') > 1)
+		token->expnd = false;
+	if(ft_strlen(new_content) == 0 && (token->type == INredirection || token->type == OUTredirection) )
 		token->expnd = false;
 	else
 		token->expnd = true;
+	printf("old content--%s  ||||  new content--%s \n", token->content, new_content);
 	free(token->content);
 	token->content = new_content;
 }
-
-

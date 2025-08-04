@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 21:41:55 by rroundi           #+#    #+#             */
-/*   Updated: 2025/07/31 21:47:23 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/04 20:29:46 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,41 +98,3 @@ int	execute_pipe(t_tree_list *tree, t_env **env)
 	signal(SIGINT, handle_sigint);
 	return (child_status(status2, env));
 }
-
-// int execute_pipe(t_tree_list *tree, t_env **env)
-// {
-//     int fd[2];
-//     pid_t pid1;
-//     pid_t pid2;
-
-//     if (!tree)
-//         return (-1);
-//     pipe(fd);
-//     pid1 = fork();
-//     if (pid1 == 0)
-//     {
-//         close(fd[0]);
-//         dup2(fd[1], STDOUT_FILENO);
-//         close(fd[1]);
-//         exec_nofork(tree->left->cmd->cmd, *env);
-//         printf("FORK 1 FAILED\n");
-//     }
-//     pid2 = fork();
-//     if (pid2 == 0)
-//     {
-//         close(fd[1]);
-//         dup2(fd[0], STDIN_FILENO);
-//         close(fd[0]);
-//         if (tree->right->type == PIPE)
-//             execute(tree->right , env);
-//         else
-//             exec_nofork(tree->right->cmd->cmd, *env);
-//         printf("SECOND FORK FAILED\n");
-//         exit(1);
-//     }
-//     close(fd[0]);
-//     close(fd[1]);
-//     wait(NULL);
-//     wait(NULL);
-//     return (0);
-// }

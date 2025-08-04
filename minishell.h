@@ -75,6 +75,13 @@ typedef struct s_cmdlist
     t_tokenlist	*in;
 }				t_cmdlist;
 
+typedef struct s_combo
+{
+	int		i;
+	char	*str;
+}				t_combo;
+
+
 typedef struct s_char
 {
 	const char		*str;
@@ -110,7 +117,7 @@ typedef struct s_env{
 	int		exit_s;
 }t_env;
 
-//builtins
+
 
 int		ft_echo(char    **av);
 int		ft_env(t_env    *env);
@@ -120,7 +127,7 @@ int 	ft_export(char **av, t_env **c_env);
 int 	ft_pwd(void);
 int 	ft_unset(t_env  **env, char **av);
 
-//
+
 int 	print_error(char *cmd, char *msg);
 int 	error_msg(char *cmd, char *msg, char *av);
 t_env   *copy_env_list(t_env *env);
@@ -153,5 +160,14 @@ int		ft_call_env(t_env	*env, char	**cmd);
 void 	handle_sigint(int sig);
 void	setup_signals(void);
 void free_env_list(t_env *head);
+int	ft_count(char const *s, char c);
+void	no_fd(char	*file_name);
+int	in_redir_call(t_tree_list *tree, int *s_stdin, t_env **env);
+int	in_redir(t_tokenlist *in, int *s_stdin);
+int	for_heredoc(t_tokenlist *curr);
+int	for_inredir(t_tokenlist *curr, t_tokenlist *in);
+t_env	*sort(t_env *env);
+t_env	*create_node(char *key, char *value);
+void	add_front(t_env **head, t_env *new_node);
 
 #endif

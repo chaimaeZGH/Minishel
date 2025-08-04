@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 21:42:20 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/01 22:28:18 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/04 22:18:30 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,32 +39,39 @@ int	prepare_heredoc(t_tree_list *tree, char **env, int exit_s)
 	return (0);
 }
 
+int	execute_helper(t_tree_list *tree, t_env **env, int ret)
+{
+	if (tree->cmd->cmd)
+	{
+		ret = is_builtin(tree);
+		if (ret != -1)
+			ret = execute_builtins(tree, env, ret);
+		else
+			ret = exec_bin(tree->cmd->cmd, *env);
+	}
+	return (ret);
+}
+
 int	execute(t_tree_list *tree, t_env **env)
 {
-	int ret = 0;
+	int	ret;
 
+	ret = 0;
 	if (tree->type == comnd)
 	{
 		if (tree->cmd)
 		{
-			if ((tree->cmd->out && (tree->cmd->out->type == OUTredirection || tree->cmd->out->type == OUTappend)) || 
-					(tree->cmd->in && (tree->cmd->in->type == INredirection || tree->cmd->in->type == HEREdocument)))
-							ret = execute_with_redirections(tree, env);
+			if ((tree->cmd->out && 
+					(tree->cmd->out->type == OUTredirection 
+						|| tree->cmd->out->type == OUTappend)) 
+				|| (tree->cmd->in && (tree->cmd->in->type == INredirection 
+						|| tree->cmd->in->type == HEREdocument)))
+				ret = execute_with_redirections(tree, env);
 			else
-			{
-				if (tree->cmd->cmd)
-				{
-					ret = is_builtin(tree);
-      				if (ret != -1)
-        				ret = execute_builtins(tree, env, ret);
-        			else
-            			ret = exec_bin(tree->cmd->cmd, *env);
-      			}
-			}
-    	}
-  }
-  else if (tree->type == PIPE)
-    ret = execute_pipe(tree, env);
-  return (ret);
+				ret = execute_helper(tree, env, ret);
+		}
+	}
+	else if (tree->type == PIPE)
+		ret = execute_pipe(tree, env);
+	return (ret);
 }
-

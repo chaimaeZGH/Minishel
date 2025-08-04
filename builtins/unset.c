@@ -1,46 +1,56 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   unset.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/04 19:54:29 by rroundi           #+#    #+#             */
+/*   Updated: 2025/08/04 19:58:31 by rroundi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-void    remove_node(t_env **env, char *key)
+void	remove_node(t_env	**env, char	*key)
 {
-    t_env   *to_remove;
-    t_env   *prev;
+	t_env	*to_remove;
+	t_env	*prev;
 
-    to_remove = find_key(*env, key);
-    if (!to_remove)
-        return ;
-    if (to_remove == *env)
-        *env = (*env)->next;
-    else
-    {
-        prev = *env;
-        while (prev->next != NULL && prev->next != to_remove)
-            prev = prev->next;
-        prev->next = to_remove->next;
-    }
-    free(to_remove->key);
-    free(to_remove->value);
-    free(to_remove);
+	to_remove = find_key(*env, key);
+	if (!to_remove)
+		return ;
+	if (to_remove == *env)
+		*env = (*env)->next;
+	else
+	{
+		prev = *env;
+		while (prev->next != NULL && prev->next != to_remove)
+			prev = prev->next;
+		prev->next = to_remove->next;
+	}
+	free(to_remove->key);
+	free(to_remove->value);
+	free(to_remove);
 }
 
-int ft_unset(t_env  **env, char **av)
+int	ft_unset(t_env **env, char **av)
 {
-    int i;
-    int ret;
+	int	i;
+	int	ret;
 
-    i = 1;
-    ret = 0;
-    // printf("\nn++%s++\n", av[i]);
-    while (av[i])
-    {
-        // printf("\n\nrah dkhel\n\n");
-        if (!if_valid(av[i]) || ft_strchr(av[i], '=') != NULL)
-        {
-            error_msg("unset", "not a valid identifier", av[i]);
-            ret = 1;
-        }
-        else
-            remove_node(env, av[i]);
-        i++;
-    }
-    return (ret);
+	i = 1;
+	ret = 0;
+	while (av[i])
+	{
+		if (!if_valid(av[i]) || ft_strchr(av[i], '=') != NULL)
+		{
+			error_msg("unset", "not a valid identifier", av[i]);
+			ret = 1;
+		}
+		else
+			remove_node(env, av[i]);
+		i++;
+	}
+	return (ret);
 }

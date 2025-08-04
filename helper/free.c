@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/04 22:46:03 by rroundi           #+#    #+#             */
+/*   Updated: 2025/08/04 22:46:26 by rroundi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-void    free_arr(char **arr)
+void	free_arr(char **arr)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (arr && arr[i])
-        free(arr[i++]);
-    free(arr);
+	i = 0;
+	while (arr && arr[i])
+		free(arr[i++]);
+	free(arr);
 }
