@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 21:42:20 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/04 22:18:30 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 20:45:47 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ int	execute(t_tree_list *tree, t_env **env)
 	int	ret;
 
 	ret = 0;
+	if (tree)
+	{
 	if (tree->type == comnd)
 	{
 		if (tree->cmd)
@@ -73,5 +75,6 @@ int	execute(t_tree_list *tree, t_env **env)
 	}
 	else if (tree->type == PIPE)
 		ret = execute_pipe(tree, env);
+	}
 	return (ret);
 }

@@ -847,13 +847,15 @@ void	for_signals(t_env *env, char *s, char **a_env)
 {
 	if (g_sig == SIGINT)
 	{
-		env->exit_s = 1;
+		if (env)
+			env->exit_s = 1;
 		g_sig = 0;
 	}
 	if (!s)
 	{
 		printf("exit\n");
-		free_arr(a_env);
+		if (a_env)
+			free_arr(a_env);
 		exit(0);
 	}
 	if (*s)
@@ -872,7 +874,10 @@ t_env	*init_env(char **envp)
 	t_env	*env;
 
 	if (!envp || !envp[0])
-		return (NULL);
+	{
+		ft_putstr_fd("minishel: impossible to run without environment\n", 2);
+		exit(1);
+	}
 	env = copy_env(envp);
 	env->exit_s = 0;
 	setup_signals();
@@ -895,11 +900,6 @@ int	main(int argc, char **argv, char **envp)
 		a_env = to_array(env);
 		s = readline("minishell> ");
 		for_signals(env, s, a_env);
-		if (!envp || !envp[0])
-		{
-			ft_putstr_fd("no environment\n", 2);
-			continue ;
-		}
 		tree = init_shell(s, a_env, env->exit_s);
 		if (tree && prepare_heredoc(tree, a_env, env->exit_s) == -1)
 		{

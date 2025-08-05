@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 22:18:45 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/04 23:56:37 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 16:59:14 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,7 @@ char	**to_array(t_env *env)
 		idx++;
 		tmp = tmp->next;
 	}
-	a_env[idx] = NULL;
-	return (a_env);
+	return (a_env[idx] = NULL, a_env);
 }
 
 char	**get_path(char *cmd, t_env *env)
