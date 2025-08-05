@@ -40,71 +40,8 @@
 #include <termios.h>
 
 extern int g_sig;
-typedef enum a_type_list
-{
-	comnd,
-	PIPE,
-	INredirection,
-	OUTredirection,
-	HEREdocument,
-	OUTappend
-}	t_type_list;
-
-typedef struct s_tokenlist
-{
-	char				*content;
-	struct s_tokenlist	*prev;
-	struct s_tokenlist	*next;
-	bool				expnd;
-	t_type_list			type;
-	int					fd;
-}						t_tokenlist;
-
-typedef struct s_check
-{
-	int			i;
-	t_tokenlist	*str;
-}				t_check;
-
-typedef struct s_cmdlist
-{
-	int			here_doc_fd;
-    char		**cmd;
-    t_tokenlist	*args;
-    t_tokenlist	*out;
-    t_tokenlist	*in;
-}				t_cmdlist;
-
-typedef struct s_combo
-{
-	int		i;
-	char	*str;
-}				t_combo;
 
 
-typedef struct s_char
-{
-	const char		*str;
-	char			*one;
-}					t_char;
-
-typedef struct s_tree_list
-{
-	t_type_list			type;
-	t_cmdlist			*cmd;
-	struct s_tree_list	*right;
-	struct s_tree_list	*left;
-}						t_tree_list;
-
-void		print_ast_topdown(t_tree_list *root);//DELEET
-t_tree_list *create_tree(t_tokenlist **head);
-t_tokenlist *ft_lstnewn(void *content);
-t_tokenlist *ft_lstlastn(t_tokenlist *lst);
-void		ft_lstadd_backn(t_tokenlist **lst, t_tokenlist *new);
-void		free_list(t_tokenlist *head);
-void		free_tree(t_tree_list *tree);
-void print_nodes(t_tokenlist *head);
-void		process_expend_content(t_tokenlist *token, char **env, int	exit_s);
 
 
 
@@ -154,13 +91,11 @@ int 	ft_strcmp(const char *s1, const char *s2);
 int 	heredoc_redir(t_tokenlist  *curr, char  **env, int exit_s);
 char    *generate_filename(int  file);
 int		prepare_heredoc(t_tree_list *tree, char **env, int	exit_s);
-char 	*expand_content(const char *content, char **env, int	exit_s);
 int     handle_exec(char    **cmd);
 int		ft_call_env(t_env	*env, char	**cmd);
 void 	handle_sigint(int sig);
 void	setup_signals(void);
 void free_env_list(t_env *head);
-int	ft_count(char const *s, char c);
 void	no_fd(char	*file_name);
 int	in_redir_call(t_tree_list *tree, int *s_stdin, t_env **env);
 int	in_redir(t_tokenlist *in, int *s_stdin);
