@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 22:12:39 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/05 22:30:22 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 22:45:48 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int	in_redir(t_token *in, int *s_stdin)
 		{
 			if (curr->expnd == false)
 			{
-				ft_putstr_fd("minishell: ambiguous redirect\n", 2);
+				ft_putstr_fd("ambiguous redirect\n", 2);
 				return (close(*s_stdin), -1);
 			}
 			if (for_inredir(curr, in) == -1)

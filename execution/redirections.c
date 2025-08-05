@@ -6,25 +6,25 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 20:50:48 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/05 22:29:17 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 22:45:36 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	out_redir(t_token *out, int *s_stdout)
+int	out_redir(t_token *out, int *s_s)
 {
 	int			fd;
 	t_token		*curr;
 
 	curr = out;
-	*s_stdout = dup(1);
-	if (*s_stdout == -1)
+	*s_s = dup(1);
+	if (*s_s == -1)
 		return (-1);
 	while (curr)
 	{
 		if (curr->expnd == false)
-			return (close(*s_stdout), ft_putstr_fd("minishell: ambiguous redirect\n", 2), -1);
+			return (close(*s_s), ft_putstr_fd("ambiguous redirect\n", 2), -1);
 		if (curr->type == OUTredirection)
 			fd = open (curr->content, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		else if (curr->type == OUTappend)
