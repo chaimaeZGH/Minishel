@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 21:42:20 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/05 20:45:47 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 21:13:23 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	prepare_heredoc(t_tree_list *tree, char **env, int exit_s)
+int	prepare_heredoc(t_tree *tree, char **env, int exit_s)
 {
-	t_tokenlist	*curr;
+	t_token	*curr;
 
 	if (tree->type == comnd && tree->cmd && tree->cmd->in)
 	{
@@ -39,7 +39,7 @@ int	prepare_heredoc(t_tree_list *tree, char **env, int exit_s)
 	return (0);
 }
 
-int	execute_helper(t_tree_list *tree, t_env **env, int ret)
+int	execute_helper(t_tree *tree, t_env **env, int ret)
 {
 	if (tree->cmd->cmd)
 	{
@@ -52,29 +52,29 @@ int	execute_helper(t_tree_list *tree, t_env **env, int ret)
 	return (ret);
 }
 
-int	execute(t_tree_list *tree, t_env **env)
+int	execute(t_tree *tree, t_env **env)
 {
 	int	ret;
 
 	ret = 0;
 	if (tree)
 	{
-	if (tree->type == comnd)
-	{
-		if (tree->cmd)
+		if (tree->type == comnd)
 		{
-			if ((tree->cmd->out && 
-					(tree->cmd->out->type == OUTredirection 
-						|| tree->cmd->out->type == OUTappend)) 
-				|| (tree->cmd->in && (tree->cmd->in->type == INredirection 
-						|| tree->cmd->in->type == HEREdocument)))
-				ret = execute_with_redirections(tree, env);
-			else
-				ret = execute_helper(tree, env, ret);
+			if (tree->cmd)
+			{
+				if ((tree->cmd->out && 
+						(tree->cmd->out->type == OUTredirection 
+							|| tree->cmd->out->type == OUTappend)) 
+					|| (tree->cmd->in && (tree->cmd->in->type == INredirection 
+							|| tree->cmd->in->type == HEREdocument)))
+					ret = execute_with_redirections(tree, env);
+				else
+					ret = execute_helper(tree, env, ret);
+			}
 		}
-	}
-	else if (tree->type == PIPE)
-		ret = execute_pipe(tree, env);
+		else if (tree->type == PIPE)
+			ret = execute_pipe(tree, env);
 	}
 	return (ret);
 }

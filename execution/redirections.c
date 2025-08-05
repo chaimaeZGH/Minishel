@@ -6,16 +6,16 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 20:50:48 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/04 22:14:59 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 22:29:17 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	out_redir(t_tokenlist *out, int *s_stdout)
+int	out_redir(t_token *out, int *s_stdout)
 {
 	int			fd;
-	t_tokenlist	*curr;
+	t_token		*curr;
 
 	curr = out;
 	*s_stdout = dup(1);
@@ -24,7 +24,7 @@ int	out_redir(t_tokenlist *out, int *s_stdout)
 	while (curr)
 	{
 		if (curr->expnd == false)
-			return (ft_putstr_fd("minishell: ambiguous redirect\n", 2), -1);
+			return (close(*s_stdout), ft_putstr_fd("minishell: ambiguous redirect\n", 2), -1);
 		if (curr->type == OUTredirection)
 			fd = open (curr->content, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		else if (curr->type == OUTappend)
@@ -39,7 +39,7 @@ int	out_redir(t_tokenlist *out, int *s_stdout)
 	return (0);
 }
 
-int	out_redir_call(t_tree_list	*tree, int	*s_stdout, t_env	**env)
+int	out_redir_call(t_tree	*tree, int	*s_stdout, t_env	**env)
 {
 	int	ret;
 
@@ -82,7 +82,7 @@ void	restore(int s_stdin, int s_stdout)
 	}
 }
 
-int	execute_with_redirections(t_tree_list *tree, t_env **env)
+int	execute_with_redirections(t_tree *tree, t_env **env)
 {
 	int	s_stdin;
 	int	s_stdout;

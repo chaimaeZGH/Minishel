@@ -6,13 +6,13 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 22:12:39 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/04 22:14:34 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 22:30:22 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	for_inredir(t_tokenlist *curr, t_tokenlist *in)
+int	for_inredir(t_token *curr, t_token *in)
 {
 	int	fd;
 
@@ -28,7 +28,7 @@ int	for_inredir(t_tokenlist *curr, t_tokenlist *in)
 	return (0);
 }
 
-int	for_heredoc(t_tokenlist *curr)
+int	for_heredoc(t_token *curr)
 {
 	int		fd;
 	char	*file_name;
@@ -46,13 +46,14 @@ int	for_heredoc(t_tokenlist *curr)
 		dup2(fd, 0);
 		close(fd);
 	}
+	close (fd);
 	free(file_name);
 	return (0);
 }
 
-int	in_redir(t_tokenlist *in, int *s_stdin)
+int	in_redir(t_token *in, int *s_stdin)
 {
-	t_tokenlist	*curr;
+	t_token	*curr;
 
 	*s_stdin = dup(0);
 	if (*s_stdin == -1)
@@ -65,7 +66,7 @@ int	in_redir(t_tokenlist *in, int *s_stdin)
 			if (curr->expnd == false)
 			{
 				ft_putstr_fd("minishell: ambiguous redirect\n", 2);
-				return (-1);
+				return (close(*s_stdin), -1);
 			}
 			if (for_inredir(curr, in) == -1)
 				return (-1);
@@ -78,7 +79,7 @@ int	in_redir(t_tokenlist *in, int *s_stdin)
 	return (0);
 }
 
-int	in_redir_call(t_tree_list *tree, int *s_stdin, t_env **env)
+int	in_redir_call(t_tree *tree, int *s_stdin, t_env **env)
 {
 	int	ret;
 

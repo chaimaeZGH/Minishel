@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipe.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 21:41:55 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/04 20:29:46 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 20:53:45 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	left_child(int *fd, t_tree_list *tree, t_env **env)
+void	left_child(int *fd, t_tree *tree, t_env **env)
 {
 	int	ret;
 
@@ -24,7 +24,7 @@ void	left_child(int *fd, t_tree_list *tree, t_env **env)
 	exit(ret);
 }
 
-void	right_child(int *fd, t_tree_list *tree, t_env **env)
+void	right_child(int *fd, t_tree *tree, t_env **env)
 {
 	int	ret;
 
@@ -70,7 +70,7 @@ int	fork_error(int *fd, pid_t pid1)
 	return (1);
 }
 
-int	execute_pipe(t_tree_list *tree, t_env **env)
+int	execute_pipe(t_tree *tree, t_env **env)
 {
 	int		fd[2];
 	pid_t	pid1;

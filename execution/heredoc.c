@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 20:58:37 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/04 21:06:48 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 20:54:00 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	if_succes(char *line, char *file_name, int fd)
 	exit(0);
 }
 
-void	write_in_file(t_tokenlist *curr, char *file, char **env, int exit_s)
+void	write_in_file(t_token *curr, char *file, char **env, int exit_s)
 {
 	int		fd;
 	char	*line;
@@ -66,7 +66,7 @@ void	write_in_file(t_tokenlist *curr, char *file, char **env, int exit_s)
 	if_succes(line, file, fd);
 }
 
-int	heredoc_redir(t_tokenlist *curr, char **env, int exit_s)
+int	heredoc_redir(t_token *curr, char **env, int exit_s)
 {
 	static int		file;
 	char			*file_name;

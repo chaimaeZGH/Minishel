@@ -6,7 +6,7 @@
 /*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 22:46:41 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/04 22:51:34 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 22:13:18 by rroundi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,18 +47,18 @@ int	handle_exec(char **cmd)
 	if (errno == ENOENT)
 	{
 		ft_putstr_fd(cmd[0], 2);
-		ft_putstr_fd(" :command not found", 2);
+		ft_putstr_fd(" :command not found\n", 2);
 		return (127);
 	}
 	else if (errno == EACCES)
 	{
 		ft_putstr_fd(cmd[0], 2);
-		ft_putstr_fd(" :permission denied", 2);
+		ft_putstr_fd(" :permission denied\n", 2);
 		return (126);
 	}
 	else
 	{
-		ft_putstr_fd("execve failed", 2);
+		ft_putstr_fd("execve failed\n", 2);
 		return (1);
 	}
 }

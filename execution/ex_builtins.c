@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ex_builtins.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rroundi <rroundi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: czghoumi <czghoumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 19:59:53 by rroundi           #+#    #+#             */
-/*   Updated: 2025/08/04 20:03:02 by rroundi          ###   ########.fr       */
+/*   Updated: 2025/08/05 20:53:45 by czghoumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return (*s1 - *s2);
 }
 
-int	is_builtin(t_tree_list *tree)
+int	is_builtin(t_tree *tree)
 {
 	if (ft_strcmp(tree->cmd->cmd[0], "echo") == 0)
 		return (1);
@@ -41,7 +41,7 @@ int	is_builtin(t_tree_list *tree)
 	return (-1);
 }
 
-int	execute_builtins(t_tree_list *tree, t_env **env, int flag)
+int	execute_builtins(t_tree *tree, t_env **env, int flag)
 {
 	int	ret;
 
